@@ -1,0 +1,60 @@
+<?xml version="1.0" encoding="UTF-8" ?>
+<!DOCTYPE mapper PUBLIC "-//mybatis.org//DTD Mapper 3.0//EN" "http://mybatis.org/dtd/mybatis-3-mapper.dtd" >
+<mapper namespace="com.malicn.server.dao.balance.BalanceDao" >
+  <resultMap id="balanceDetailMap" type="com.malicn.server.domain.balance.BalanceLog" >
+    <id column="id" property="id" jdbcType="BIGINT" />
+    <result column="carrier_id" property="carrierId" jdbcType="BIGINT"/>
+    <result column="title" property="title" jdbcType="VARCHAR"/>
+    <result column="type" property="type" jdbcType="TINYINT" />
+    <result column="content" property="content" jdbcType="VARCHAR" />
+    <result column="amount" property="amount" jdbcType="DECIMAL" />
+    <result column="create_time" property="createTime" jdbcType="TIMESTAMP" />
+    <result column="is_deleted" property="isDeleted" jdbcType="TINYINT" />
+  </resultMap>
+
+  <sql id="table_name">ml_balance_log</sql>
+  <sql id="all_columns">id,user_id,user_type,title,type,content,amount,create_time,is_deleted</sql>
+
+  <!--获取累计提现金额-->
+  <select id="getAmountWithdrawMoneyByUserId" parameterType="com.malicn.server.dao.balance.BaseQueryDTO" resultType="decimal">
+    SELECT sum(amount) from ml_withdraw where user_id = #{userId}  and user_type=#{userType} AND audit_status = 1 OR audit_status = 0
+  </select>
+
+  <!--获取正在提现笔数-->
+  <select id="getCountWithdrawByUserId" parameterType="com.malicn.server.dao.balance.BaseQueryDTO" resultType="integer">
+    SELECT count(id) from ml_withdraw where user_id = #{userId} and user_type=#{userType}  AND audit_status = 0
+  </select>
+
+  <!--获取账户余额明细-->
+  <select id="listBalanceDetails" parameterType="com.malicn.server.dao.balance.BaseQueryDTO" resultMap="balanceDetailMap">
+    select
+    <include refid="all_columns"/>
+    from ml_balance_log
+    WHERE user_id=#{userId} and user_type=#{userType} AND is_deleted = 0 ORDER BY create_time DESC
+  </select>
+
+  <!--获取提现明细-->
+  <select id="listWithdrawDetail" parameterType="com.malicn.server.dao.balance.BaseQueryDTO" resultMap="balanceDetailMap">
+    select
+    <include refid="all_columns"/>
+    from ml_balance_log
+    WHERE user_id=#{userId} and user_type=#{userType} AND (type = 3 OR type = 4) AND is_deleted = 0 ORDER BY create_time DESC
+  </select>
+
+  <!--插入一条提现数据-->
+  <insert id="createWithdraw"  parameterType="com.malicn.server.domain.balance.Withdraw" useGeneratedKeys="true" keyProperty="id">
+    INSERT INTO ml_withdraw
+      (user_id,user_type,bank_card_id,bank_card_no,amount,audit_status,create_time,update_time)
+      VALUES
+      (#{userId},#{userType},#{bankCardId},#{bankCardNo},#{amount},#{auditStatus},now(),now())
+  </insert>
+
+  <!--插入余额/提现明细信息-->
+  <insert id="createBalanceLogInfo" parameterType="com.malicn.server.domain.balance.BalanceLog">
+    INSERT INTO ml_balance_log
+    (user_id,user_type,title,type,refer_id,content,amount,create_time,is_deleted)
+    VALUES
+    (#{userId},#{userType},#{title},#{type},#{referId},#{content},#{amount},now(),#{isDeleted})
+  </insert>
+
+</mapper>

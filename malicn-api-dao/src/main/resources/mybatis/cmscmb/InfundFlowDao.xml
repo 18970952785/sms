@@ -1,0 +1,92 @@
+<?xml version="1.0" encoding="UTF-8" ?>
+<!DOCTYPE mapper PUBLIC "-//mybatis.org//DTD Mapper 3.0//EN" "http://mybatis.org/dtd/mybatis-3-mapper.dtd" >
+<mapper namespace="com.malicn.server.dao.cmscmb.InfundFlowDao">
+    <resultMap id="InfundFlowMap" type="com.malicn.server.domain.cmscmb.InfundFlow">
+        <id column="id" property="id" jdbcType="BIGINT"/>
+        <result column="pay_type" property="payType" jdbcType="BIGINT"/>
+        <result column="flow_no" property="flowNo" jdbcType="VARCHAR"/>
+        <result column="pay_name" property="payName" jdbcType="VARCHAR"/>
+        <result column="pay_account" property="payAccount" jdbcType="VARCHAR"/>
+        <result column="amount" property="amount" jdbcType="DECIMAL"/>
+        <result column="remark" property="remark" jdbcType="VARCHAR"/>
+        <result column="pay_time" property="payTime" jdbcType="TIMESTAMP"/>
+        <result column="charge_status" property="chargeStatus" jdbcType="BIGINT"/>
+        <result column="from_type" property="fromType" jdbcType="BIGINT"/>
+        <result column="create_time" property="createTime" jdbcType="TIMESTAMP"/>
+        <result column="update_time" property="updateTime" jdbcType="TIMESTAMP"/>
+        <result column="creator_name" property="creatorName" jdbcType="VARCHAR"/>
+        <result column="updator_name" property="updatorName" jdbcType="VARCHAR"/>
+    </resultMap>
+
+    <sql id="AllColumn">
+   id,
+   pay_type,flow_no,pay_name,pay_account,amount,
+   remark,pay_time,charge_status,from_type,create_time,update_time,creator,updator
+  </sql>
+    <sql id="table_name">cms_infund_flow</sql>
+    <!-- 插入银行交易记录 -->
+    <insert id="insert" useGeneratedKeys="true"  keyProperty="id" parameterType="com.malicn.server.domain.cmscmb.InfundFlow">
+        insert into <include refid="table_name"></include>
+        (pay_type,flow_no,pay_name,pay_account,amount,
+        remark,pay_time,charge_status,from_type,create_time,creator,updator)
+        values
+            (
+            #{payType},#{flowNo},#{payName},#{payAccount},#{amount},
+             #{remark},#{payTime},#{chargeStatus},#{fromType},now(),#{creator},#{updator}
+            )
+    </insert>
+
+    <select id="getInfundFlowByPayTime" parameterType="java.util.Date" resultType="java.util.Date">
+        select MAX(pay_time) AS pay_time
+        from
+        <include refid="table_name"></include>
+        WHERE pay_time &gt;= #{bigenDate} AND pay_time &lt;=#{endDate} and pay_type=1
+    </select>
+    <insert id="saveAll" parameterType="java.util.List">
+        insert into <include refid="table_name"></include>
+          (pay_type,flow_no,pay_name,pay_account,amount,
+        remark,pay_time,charge_status,from_type,create_time,creator,updator)
+        values
+        <foreach collection="infundFlowList" item="item" index="index" separator=",">
+            (
+            #{item.payType},#{item.flowNo},#{item.payName},#{item.payAccount},#{item.amount},
+            #{item.remark},#{item.payTime},#{item.chargeStatus},#{item.fromType},now(),#{item.creator},#{item.updator}
+            )
+        </foreach>
+    </insert>
+
+
+    <select id="listInFundFlow" resultMap="InfundFlowMap">
+        SELECT <include refid="AllColumn" />
+        FROM <include refid="table_name"/>
+        WHERE   DATE_FORMAT(pay_time, '%Y-%m-%d') = DATE_FORMAT(#{billDate}, '%Y-%m-%d')
+        AND pay_name = #{billName}
+        AND charge_status = 1
+        AND amount = #{tradeAmount}
+    </select>
+
+    <select id="getInFundFlowById" resultMap="InfundFlowMap" parameterType="java.lang.Long">
+        SELECT <include refid="AllColumn"/>
+        FROM <include refid="table_name"/>
+        WHERE id = #{flowId}
+    </select>
+
+    <update id="updateInfundFlow">
+        UPDATE <include refid="table_name" /> SET charge_status = #{chargeStatus}
+        where id =#{id}
+    </update>
+
+    <select id="getByFlowNo" resultMap="InfundFlowMap" parameterType="java.lang.String">
+        SELECT <include refid="AllColumn"/>
+        FROM <include refid="table_name"/>
+        WHERE flow_no = #{flowNo}
+    </select>
+
+    <select id="getInfundFlowByBank" resultMap="InfundFlowMap" >
+        SELECT <include refid="AllColumn"/>
+        FROM <include refid="table_name"/>
+      where  amount=#{amount} AND pay_account=#{payAccount} and pay_time=#{payTime}
+    </select>
+
+
+</mapper>

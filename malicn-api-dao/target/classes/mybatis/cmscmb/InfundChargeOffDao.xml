@@ -1,0 +1,58 @@
+<?xml version="1.0" encoding="UTF-8" ?>
+<!DOCTYPE mapper PUBLIC "-//mybatis.org//DTD Mapper 3.0//EN" "http://mybatis.org/dtd/mybatis-3-mapper.dtd" >
+<mapper namespace="com.malicn.server.dao.cmscmb.InfundChargeOffDao">
+    <resultMap id="InfundChargeOffMap" type="com.malicn.server.domain.cmscmb.InfundChargeOff">
+        <id column="id" property="id"  />
+        <result column="flow_ids" property="flowIds" />
+        <result column="order_ids" property="orderIds" />
+        <result column="charge_type" property="chargeType"/>
+        <result column="bill_ids" property="billIds"  />
+        <result column="owner_deposite_id" property="ownerDepositeId"/>
+        <result column="exception_fund_id" property="exceptionFundId"/>
+        <result column="charge_amount" property="chargeAmount"/>
+        <result column="create_time" property="createTime"/>
+        <result column="update_time" property="updateTime"/>
+        <result column="creator" property="creator"/>
+        <result column="updator" property="updator"/>
+    </resultMap>
+
+    <sql id="Base_Column_List" >
+        id,flow_ids,order_ids,charge_type,bill_ids,owner_deposite_id,exception_fund_id,charge_amount,
+        create_time,update_time,creator,updator
+    </sql>
+
+    <insert id="insert" parameterType="com.malicn.server.domain.cmscmb.InfundChargeOff">
+        insert into cms_infund_charge_off
+        ( flow_ids,
+        order_ids,
+        charge_type,
+        bill_ids,
+        owner_deposite_id,
+        exception_fund_id,
+        charge_amount,
+        create_time,
+        creator,
+        updator)
+        values (
+        #{flowIds},
+        #{orderIds},
+        #{chargeType},
+        #{billIds},
+        #{ownerDepositeId},
+        #{exceptionFundId},
+        #{chargeAmount},
+        now(),
+        #{creator},
+        #{updator}
+        )
+    </insert>
+
+
+    <select id="getByOrderId" resultMap="InfundChargeOffMap">
+        select
+            <include refid="Base_Column_List"/>
+        from cms_infund_charge_off t where t.order_id = #{orderId}
+    </select>
+
+
+</mapper>

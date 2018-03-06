@@ -1,0 +1,137 @@
+<?xml version="1.0" encoding="UTF-8" ?>
+<!DOCTYPE mapper PUBLIC "-//mybatis.org//DTD Mapper 3.0//EN" "http://mybatis.org/dtd/mybatis-3-mapper.dtd" >
+<mapper namespace="com.malicn.server.dao.sys.VersionDao">
+
+    <resultMap id="VersionMap" type="com.malicn.server.domain.sys.Version">
+        <id column="id" property="id"/>
+        <id column="name" property="name"/>
+        <id column="version" property="version"/>
+        <id column="version_code" property="versionCode"/>
+        <id column="client_type" property="clientType"/>
+        <id column="os_type" property="osType"/>
+        <id column="url" property="url"/>
+        <id column="content" property="content"/>
+        <id column="is_force" property="isForce"/>
+        <id column="status" property="status"/>
+        <id column="issue_time" property="issueTime"/>
+        <result column="version_type" property="versionType" jdbcType="CHAR" />
+        <result column="create_time" property="createTime" jdbcType="TIMESTAMP" />
+        <result column="update_time" property="updateTime" jdbcType="TIMESTAMP" />
+        <result column="is_deleted" property="isDeleted" jdbcType="TINYINT" />
+    </resultMap>
+
+    <sql id="All_Column">
+        id, name, version, version_code, client_type, os_type, url, content, is_force, version_type,
+    create_time, update_time, issue_time, status, is_deleted
+    </sql>
+
+
+    <!-- 获取最新版本 -->
+    <select id="getVersionByType" resultMap="VersionMap">
+        SELECT <include refid="All_Column" />
+        FROM ml_version
+        WHERE client_type = #{clientType} AND os_type = #{osType} AND is_deleted = 0
+        ORDER BY version_code DESC LIMIT 1
+    </select>
+
+    <!-- 根据客户端当前版本编号查询大于当前版本编号的版本 -->
+    <select id="listVersionByVersionCode" resultMap="VersionMap">
+        SELECT <include refid="All_Column" />
+        FROM ml_version
+        WHERE client_type = #{clientType} AND os_type = #{osType} AND is_deleted = 0
+        AND version_code &gt; #{versionCode}
+    </select>
+
+    <select id="selectPrimaryKeyAllList" resultMap="VersionMap">
+      SELECT <include refid="All_Column" /> from ml_version
+        where 1=1
+        <if test="clientType !=null and clientType !=''">
+            AND client_type=#{clientType}
+        </if>
+        <if test="name !=null and name !=''">
+           AND  name   like concat('%',#{name},'%')
+        </if>
+        <if test="osType !=null and osType !=''">
+            AND os_type=#{osType}
+        </if>
+        <if test="status !=null and status !=''">
+            AND status=#{status}
+        </if>
+        ORDER BY create_time desc
+    </select>
+
+    <select id="getById" resultMap="VersionMap">
+        SELECT <include refid="All_Column" /> from ml_version
+        where id=#{id}
+    </select>
+
+
+    <insert id="insertVersion"  parameterType="com.malicn.server.domain.sys.Version" useGeneratedKeys="true" keyProperty="id" >
+        insert into ml_version (id,name, version,
+        version_code, client_type, os_type,
+        url, content, is_force,
+        version_type, create_time,update_time,
+        issue_time, status, is_deleted
+        )
+        values (#{id,jdbcType=INTEGER}, #{name,jdbcType=VARCHAR}, #{version,jdbcType=VARCHAR},
+        #{versionCode,jdbcType=BIGINT}, #{clientType,jdbcType=TINYINT}, #{osType,jdbcType=TINYINT},
+        #{url,jdbcType=VARCHAR}, #{content,jdbcType=VARCHAR}, #{isForce,jdbcType=TINYINT},
+        #{versionType,jdbcType=CHAR},now(),now(),
+        #{issueTime,jdbcType=TIMESTAMP}, #{status,jdbcType=TINYINT}, #{isDeleted,jdbcType=TINYINT}
+        )
+    </insert>
+
+    <update id="updateVersion" parameterType="com.malicn.server.domain.sys.Version" >
+        update ml_version
+        <set >
+            <if test="name != null" >
+                name = #{name,jdbcType=VARCHAR},
+            </if>
+            <if test="version != null" >
+                version = #{version,jdbcType=VARCHAR},
+            </if>
+            <if test="versionCode != null" >
+                version_code = #{versionCode,jdbcType=BIGINT},
+            </if>
+            <if test="clientType != null" >
+                client_type = #{clientType,jdbcType=TINYINT},
+            </if>
+            <if test="osType != null" >
+                os_type = #{osType,jdbcType=TINYINT},
+            </if>
+            <if test="url != null" >
+                url = #{url,jdbcType=VARCHAR},
+            </if>
+            <if test="content != null" >
+                content = #{content,jdbcType=VARCHAR},
+            </if>
+            <if test="isForce != null" >
+                is_force = #{isForce,jdbcType=TINYINT},
+            </if>
+            <if test="versionType != null" >
+                version_type = #{versionType,jdbcType=CHAR},
+            </if>
+            <if test="createTime != null" >
+                create_time = #{createTime,jdbcType=TIMESTAMP},
+            </if>
+            <if test="issueTime != null" >
+                issue_time = #{issueTime,jdbcType=TIMESTAMP},
+            </if>
+            <if test="status != null" >
+                status = #{status,jdbcType=TINYINT},
+            </if>
+            <if test="isDeleted != null" >
+                is_deleted = #{isDeleted,jdbcType=TINYINT},
+            </if>
+        </set>
+        where id = #{id,jdbcType=INTEGER}
+    </update>
+
+    <update id="updateVerionStatus">
+         update ml_version SET   is_force = #{isForce,jdbcType=TINYINT}  where id = #{id,jdbcType=INTEGER}
+    </update>
+
+    <update id="updateVerionDelete">
+        update ml_version SET   is_deleted = #{isDeleted,jdbcType=TINYINT}  where id = #{id,jdbcType=INTEGER}
+    </update>
+</mapper>

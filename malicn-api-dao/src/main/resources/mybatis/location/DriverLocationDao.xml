@@ -1,0 +1,60 @@
+<?xml version="1.0" encoding="UTF-8" ?>
+<!DOCTYPE mapper PUBLIC "-//mybatis.org//DTD Mapper 3.0//EN" "http://mybatis.org/dtd/mybatis-3-mapper.dtd" >
+<mapper namespace="com.malicn.server.dao.location.DriverLocationDao" >
+  <resultMap id="BaseResultMap" type="com.malicn.server.domain.location.DriverLocation" >
+    <id column="id" property="id" jdbcType="BIGINT" />
+    <result column="driver_id" property="driverId" jdbcType="BIGINT" />
+    <result column="driver_status" property="driverStatus" jdbcType="TINYINT" />
+    <result column="lng" property="lng" jdbcType="DECIMAL" />
+    <result column="lat" property="lat" jdbcType="DECIMAL" />
+    <result column="create_time" property="createTime" jdbcType="TIMESTAMP" />
+    <result column="is_deleted" property="isDeleted" jdbcType="TINYINT" />
+
+
+    <result column="route" property="route" jdbcType="VARCHAR" />
+    <result column="user_name" property="userName" jdbcType="VARCHAR" />
+  </resultMap>
+  <sql id="Base_Column_List" >
+    id, driver_id, driver_status, lng, lat, create_time, is_deleted
+  </sql>
+
+  <!-- 保存司机定位信息 -->
+  <insert id="saveDriverLocation" parameterType="com.malicn.server.domain.location.DriverLocation">
+    INSERT INTO ml_driver_location (driver_id, driver_status, lng, lat, create_time)
+    VALUES (#{driverId}, #{driverStatus}, #{lng}, #{lat}, now());
+  </insert>
+
+  <select id="getByName" resultMap="BaseResultMap">
+   select  driver_id,
+    group_concat(zuob,'') AS route
+    from (
+    select
+    t.driver_id,
+    concat('[',t.lng,',',t.lat,']') as  zuob
+    from ml_driver_location t
+    INNER JOIN ml_user_base b ON b.user_id=t.driver_id
+    WHERE   1=1
+    <if test="name !=null and name!=''">
+      AND b.user_name LIKE CONCAT('%', #{name},'%')
+    </if>
+    and t.create_time  &gt;=#{strDate}
+    AND t.create_time &lt;=#{endDate}
+    ) c  group by driver_id
+
+  </select>
+
+  <select id="getDriverRoute" resultMap="BaseResultMap">
+    select
+    t.driver_id,
+    concat('[',t.lng,',',t.lat,']') as  route
+    from ml_driver_location t
+    INNER JOIN ml_user_base b ON b.user_id=t.driver_id
+    WHERE   1=1
+    <if test="mobile !=null and mobile!=''">
+      AND b.mobile LIKE CONCAT('%', #{mobile},'%')
+    </if>
+    and t.create_time  &gt;=#{strDate}
+    AND t.create_time &lt;=#{endDate}
+  </select>
+
+</mapper>

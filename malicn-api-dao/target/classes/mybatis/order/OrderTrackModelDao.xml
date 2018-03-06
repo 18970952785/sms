@@ -1,0 +1,29 @@
+<?xml version="1.0" encoding="UTF-8" ?>
+<!DOCTYPE mapper PUBLIC "-//mybatis.org//DTD Mapper 3.0//EN" "http://mybatis.org/dtd/mybatis-3-mapper.dtd" >
+<mapper namespace="com.malicn.server.dao.order.OrderTrackModelDao" >
+
+  <resultMap id="OrderTrackModelMap" type="com.malicn.server.domain.order.OrderTrackModel" >
+    <id column="id" property="id" jdbcType="INTEGER" />
+    <result column="name" property="name" jdbcType="VARCHAR" />
+    <result column="title" property="title" jdbcType="VARCHAR" />
+    <result column="create_time" property="createTime" jdbcType="TIMESTAMP" />
+    <result column="update_time" property="updateTime" jdbcType="TIMESTAMP" />
+    <result column="step" property="step" jdbcType="INTEGER" />
+    <result column="type" property="type" />
+  </resultMap>
+
+
+  <sql id="table_name">ml_order_track_model</sql>
+  <sql id="all_columns">id,name,title,create_time,update_time,step,type</sql>
+
+  <!-- 查询模板 -->
+  <select id="getAll" resultMap="OrderTrackModelMap">
+    select
+    <include refid="all_columns"/>
+    FROM
+    <include refid="table_name"/>
+    where   type = #{type}
+          order by step asc
+
+  </select>
+</mapper>

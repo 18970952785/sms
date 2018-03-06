@@ -1,0 +1,82 @@
+<?xml version="1.0" encoding="UTF-8" ?>
+<!DOCTYPE mapper PUBLIC "-//mybatis.org//DTD Mapper 3.0//EN" "http://mybatis.org/dtd/mybatis-3-mapper.dtd" >
+<mapper namespace="com.malicn.server.dao.order.OrderFileApiDao">
+
+    <resultMap id="OrderFileMap" type="com.malicn.server.domain.order.OrderApiFile">
+        <id column="id" property="id"/>
+        <result column="order_id" property="orderId"/>
+        <result column="creator_type" property="creatorType"/>
+        <result column="chain_id" property="chainId"/>
+        <result column="file_class" property="fileClass"/>
+        <result column="file_type" property="fileType"/>
+        <result column="file_url" property="fileUrl"/>
+        <result column="create_time" property="createTime"/>
+        <result column="update_time" property="updateTime"/>
+         <result column="creator" property="creator"/>
+        <result column="updator" property="updator"/>
+    </resultMap>
+    <!--根据订单列举的证据链-->
+    <select id="listByOrderId" resultMap="OrderFileMap">
+        select
+        id,
+        order_id,
+        creator,
+        creator_type,
+        chain_id,
+        file_class,
+        file_type,
+        file_url,
+        create_time,
+        update_time,
+        updator
+        from cms_order_file  t
+        where t.order_id = #{orderId}
+        order by t.chain_id asc
+    </select>
+    <!--插入单条文件-->
+    <insert id="insert" parameterType="com.malicn.server.domain.order.OrderApiFile">
+        insert into cms_order_file(
+        order_id, creator_type, chain_id, file_class,file_type,file_url,create_time,creator,updator
+        )values(
+        #{orderId}, #{creatorType},#{chainId},#{fileClass},#{fileType},  #{fileUrl},now(),#{creator},#{updator}
+        )
+    </insert>
+
+    <!-- 批量插入-->
+    <insert id="insertBatch" parameterType="java.util.List">
+        insert into cms_order_file
+        (
+        order_id, creator_type, chain_id, file_class,file_type,file_url,create_time,creator,updator
+        )
+        values
+        <foreach collection="list" item="item" index="index" separator=",">
+            (
+            #{item.orderId},#{item.creatorType},#{item.chainId},
+            #{item.fileClass}, #{item.fileType}, #{item.fileUrl},now(), #{item.creator},
+            #{item.updator}
+            )
+        </foreach>
+    </insert>
+
+    <!--列举订单的所有步骤图片-->
+    <select id="getOrderFile" resultMap="OrderFileMap">
+        select
+        id,
+        order_id,
+        creator,
+        creator_type,
+        chain_id,
+        file_class,
+        file_type,
+        file_url,
+        create_time,
+        update_time,
+        updator
+        from cms_order_file  t
+        where t.order_id = #{orderId}
+        and t.chain_id=#{chainId}
+        and t.file_class = #{fileClass}
+        order by t.chain_id asc
+    </select>
+
+</mapper>

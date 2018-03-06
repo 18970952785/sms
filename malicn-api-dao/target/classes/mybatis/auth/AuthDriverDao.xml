@@ -1,0 +1,95 @@
+<?xml version="1.0" encoding="UTF-8" ?>
+<!DOCTYPE mapper PUBLIC "-//mybatis.org//DTD Mapper 3.0//EN" "http://mybatis.org/dtd/mybatis-3-mapper.dtd" >
+<mapper namespace="com.malicn.server.dao.auth.AuthDriverDao" >
+  <resultMap id="AuthDriverMap" type="com.malicn.server.domain.auth.AuthDriver" >
+    <id column="id" property="id" jdbcType="BIGINT" />
+    <result column="driver_id" property="driverId" jdbcType="BIGINT" />
+    <result column="head_img" property="headImg" jdbcType="VARCHAR" />
+    <result column="real_name" property="realName" jdbcType="VARCHAR" />
+    <result column="id_card" property="idCard" jdbcType="VARCHAR" />
+    <result column="licn_img" property="licnImg" jdbcType="VARCHAR" />
+    <result column="licn_exp_date" property="licnExpDate" jdbcType="DATE" />
+    <result column="audit_status" property="auditStatus" jdbcType="TINYINT" />
+    <result column="audit_remark" property="auditRemark" jdbcType="VARCHAR" />
+    <result column="audit_time" property="auditTime" jdbcType="TIMESTAMP" />
+    <result column="create_time" property="createTime" jdbcType="TIMESTAMP" />
+    <result column="mobile" property="mobile" />
+  </resultMap>
+
+  <!-- 全字段 -->
+  <sql id="Base_Column_List" >
+    id, driver_id, head_img, real_name, id_card, licn_img, licn_exp_date, audit_status,
+    audit_remark, audit_time, create_time
+  </sql>
+
+  <sql id="Join_Base_Column_List" >
+    a.id, a.driver_id, a.head_img, a.real_name, a.id_card, a.licn_img, a.licn_exp_date,
+    a.audit_status, a.audit_remark, a.audit_time, a.create_time
+  </sql>
+
+
+
+  <!-- 查询司机认证信息 -->
+  <select id="getAuthDriverByDriverId" resultMap="AuthDriverMap">
+    SELECT <include refid="Base_Column_List" />
+    FROM ml_auth_driver
+    WHERE driver_id = #{driverId}
+    ORDER BY create_time desc limit 1
+  </select>
+
+  <!-- 查询状态为0的认证数据（未审核的） -->
+  <select id="getWSHAuthDriverByDriverId" parameterType="java.lang.Long" resultMap="AuthDriverMap">
+    SELECT <include refid="Base_Column_List" /> FROM ml_auth_driver
+    WHERE driver_id = #{driverId}
+    AND audit_status = 0
+    ORDER BY create_time desc limit 1
+  </select>
+
+  <!-- 提交司机认证信息 -->
+  <insert id="saveAuthDriver" parameterType="com.malicn.server.domain.auth.AuthDriver">
+    INSERT INTO ml_auth_driver(driver_id, head_img, real_name, id_card, licn_img, licn_exp_date, audit_status, create_time)
+    VALUES (#{driverId}, #{headImg}, #{realName}, #{idCard}, #{licnImg}, #{licnExpDate}, #{auditStatus}, now())
+  </insert>
+
+
+  <select id="getAuthDriverByParams" resultMap="AuthDriverMap">
+    SELECT <include refid="Join_Base_Column_List" />, b.mobile
+    FROM ml_auth_driver a
+    LEFT JOIN ml_user_base b
+    ON a.driver_id = b.user_id
+    WHERE a.audit_status = 0
+    <if test="mobile != null and mobile !=''">
+      AND LOCATE(#{mobile}, b.mobile) > 0
+    </if>
+    <if test="realName != null and realName !=''">
+      AND LOCATE(#{realName}, a.real_name) > 0
+    </if>
+    ORDER BY a.create_time ASC
+  </select>
+  <select id="listAuthDriverByDriverId" resultMap="AuthDriverMap" parameterType="java.lang.Long">
+    SELECT <include refid="Join_Base_Column_List" />, b.mobile
+    FROM ml_auth_driver a
+    LEFT JOIN ml_user_base b
+    ON a.driver_id = b.user_id
+    AND a.audit_status != 0
+    WHERE a.driver_id = #{driverId}
+  </select>
+  <select id="getAuthDriverById" resultMap="AuthDriverMap" parameterType="java.lang.Long">
+    SELECT <include refid="Join_Base_Column_List" />, b.mobile
+    FROM ml_auth_driver a
+    LEFT JOIN ml_user_base b
+    ON a.driver_id = b.user_id
+    WHERE a.id = #{auditId}
+  </select>
+
+  <update id="updateByAuditStatus">
+    UPDATE ml_auth_driver
+    SET audit_status = #{auditStatus},
+    audit_remark = #{auditRemark},
+    id_card = #{idCard},
+    licn_exp_date = #{licnExpDate},
+    audit_time = now()
+    WHERE id = #{auditId}
+  </update>
+
+</mapper>

@@ -1,0 +1,99 @@
+<?xml version="1.0" encoding="UTF-8" ?>
+<!DOCTYPE mapper PUBLIC "-//mybatis.org//DTD Mapper 3.0//EN" "http://mybatis.org/dtd/mybatis-3-mapper.dtd" >
+<mapper namespace="com.malicn.server.dao.reward.OrderRewardDao" >
+
+  <resultMap id="OrderRewardMap" type="com.malicn.server.domain.reward.OrderReward" >
+    <id column="id" property="id" jdbcType="BIGINT" />
+    <result column="user_id" property="userId" jdbcType="BIGINT" />
+    <result column="vip_id" property="vipId"/>
+    <result column="vip_name" property="vipName" />
+    <result column="order_id" property="orderId" jdbcType="BIGINT" />
+    <result column="weight" property="weight" jdbcType="DECIMAL" />
+    <result column="amount" property="amount" jdbcType="DECIMAL" />
+    <result column="create_time" property="createTime" jdbcType="TIMESTAMP" />
+    <result column="update_time" property="updateTime" jdbcType="TIMESTAMP" />
+    <result column="createTimeMonth" property="createTimeMonth" jdbcType="VARCHAR" />
+
+    <!-- task -->
+    <result column="count_order" property="countOrder"/>
+    <result column="sum_weight" property="sumWeight"  />
+    <result column="sum_amount" property="sumAmount"  />
+  </resultMap>
+
+
+  <sql id="all_column" >
+    id, user_id, vip_id, vip_name, order_id, weight, amount, create_time, update_time
+  </sql>
+
+  <sql id="base_column" >
+    user_id, order_id, weight, amount, create_time
+    <!--@author qun.xu @desc 增加vip_id,vip_name-->
+    ,vip_id,vip_name
+  </sql>
+
+
+  <!-- 查询用户累计订单奖励 -->
+  <select id="countOrderReward" resultType="java.math.BigDecimal" >
+    SELECT SUM(amount) FROM ml_order_reward WHERE vip_id=#{vipId}
+  </select>
+
+  <!-- 查询订单奖励 -->
+  <select id="getOrderRewardList" resultMap="OrderRewardMap" parameterType="com.malicn.server.dao.balance.BaseQueryDTO">
+    select
+      <include refid="all_column" />
+    from ml_order_reward t
+    where user_id = #{userId}
+    and vip_name = #{vipName}
+    order by t.create_time desc
+
+  </select>
+
+  <!-- 按月份-查询订单奖励 -->
+  <select id="getOrderRewardListMonth" resultMap="OrderRewardMap" parameterType="com.malicn.server.dao.balance.BaseQueryDTO">
+    SELECT
+    t.user_id ,
+    SUM(t.`amount`) as  amount ,
+    SUM(t.`weight`) as  weight,
+    DATE_FORMAT(t.create_time,'%Y-%m') as createTimeMonth
+    FROM ml_order_reward t
+    WHERE user_id = #{userId}
+    AND vip_name = #{vipName}
+    AND   DATE_FORMAT(t.create_time,'%Y-%m')<![CDATA[<]]>DATE_FORMAT(NOW(),'%Y-%m')
+    GROUP BY DATE_FORMAT(t.create_time,'%Y-%m'),t.user_id
+    Order by  DATE_FORMAT(t.create_time,'%Y-%m') desc
+  </select>
+
+
+  <!-- 保存下单奖励 -->
+  <select id="saveOrderReward" parameterType="com.malicn.server.domain.reward.OrderReward">
+    insert into ml_order_reward(
+      <include refid="base_column"/>
+    )values(
+        #{userId},
+        #{orderId},
+        #{weight},
+        #{amount},
+        now(),
+        #{vipId},
+        #{vipName}
+     )
+  </select>
+  <select id="getUpMonth" resultMap="OrderRewardMap">
+    SELECT <include refid="all_column" />
+    FROM ml_order_reward
+    WHERE vip_name = 'manageOwner'
+    AND DATE_FORMAT(create_time,'%Y-%m-%d') >= DATE_FORMAT(#{startDate},'%Y-%m-%d')
+    AND DATE_FORMAT(create_time,'%Y-%m-%d') &lt; DATE_FORMAT(#{endDate},'%Y-%m-%d')
+    <if test="group == 1">
+      GROUP BY user_id
+    </if>
+  </select>
+  <select id="getCountAndSum" resultMap="OrderRewardMap">
+      SELECT COUNT(order_id) as count_order, SUM(weight) sum_weight, SUM(amount) as sum_amount
+      FROM ml_order_reward
+      WHERE vip_name = #{vipName}
+      AND user_id = #{userId}
+  </select>
+
+
+</mapper>

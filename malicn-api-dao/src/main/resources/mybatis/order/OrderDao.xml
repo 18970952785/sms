@@ -1,0 +1,1740 @@
+<?xml version="1.0" encoding="UTF-8" ?>
+<!DOCTYPE mapper PUBLIC "-//mybatis.org//DTD Mapper 3.0//EN" "http://mybatis.org/dtd/mybatis-3-mapper.dtd" >
+<mapper namespace="com.malicn.server.dao.order.OrderDao">
+    <resultMap id="OrderMap" type="com.malicn.server.domain.order.Order">
+        <id column="order_id" property="orderId" jdbcType="BIGINT"/>
+        <result column="owner_id" property="ownerId" jdbcType="BIGINT"/>
+        <result column="carrier_id" property="carrierId" jdbcType="BIGINT"/>
+        <result column="driver_id" property="driverId" jdbcType="BIGINT"/>
+        <result column="driver_head_img" property="driverHeadImg" jdbcType="VARCHAR"/>
+        <result column="driver_mobile" property="driverMobile" jdbcType="VARCHAR"/>
+        <result column="vehicle_id" property="vehicleId" jdbcType="BIGINT"/>
+        <result column="vehicle_type" property="vehicleType" jdbcType="TINYINT"/>
+        <result column="plate_no" property="plateNo" jdbcType="VARCHAR"/>
+        <result column="vehicle_len" property="vehicleLen" jdbcType="DECIMAL"/>
+        <result column="start_name" property="startName" jdbcType="VARCHAR"/>
+        <result column="start_id" property="startId" jdbcType="INTEGER"/>
+        <result column="arrive_name" property="arriveName" jdbcType="VARCHAR"/>
+        <result column="arrive_id" property="arriveId" jdbcType="INTEGER"/>
+        <result column="weight" property="weight" jdbcType="DECIMAL"/>
+        <result column="start_date" property="startDate"/>
+        <result column="cargo_ctgry_id" property="cargoCtgryId" jdbcType="VARCHAR"/>
+        <result column="cargo_ctgry_name" property="cargoCtgryName" jdbcType="VARCHAR"/>
+        <result column="start_strg_id" property="startStrgId" jdbcType="BIGINT"/>
+        <result column="start_strg_name" property="startStrgName" jdbcType="VARCHAR"/>
+        <result column="start_address" property="startAddress" jdbcType="VARCHAR"/>
+        <result column="start_contact" property="startContact" jdbcType="VARCHAR"/>
+        <result column="start_con_tel" property="startConMobile" jdbcType="VARCHAR"/>
+        <result column="arrive_date" property="arriveDate"/>
+        <result column="arrive_strg_id" property="arriveStrgId" jdbcType="BIGINT"/>
+        <result column="arrive_strg_name" property="arriveStrgName" jdbcType="VARCHAR"/>
+        <result column="arrive_contact" property="arriveContact" jdbcType="VARCHAR"/>
+        <result column="arrive_con_tel" property="arriveConMobile" jdbcType="VARCHAR"/>
+        <result column="arrive_address" property="arriveAddress" jdbcType="VARCHAR"/>
+        <result column="owner_msg" property="ownerMsg" jdbcType="VARCHAR"/>
+        <result column="route_id" property="routeId" jdbcType="INTEGER"/>
+        <result column="unit_price" property="unitPrice" jdbcType="DECIMAL"/>
+        <result column="find_vehl_num" property="findVehlNum" jdbcType="INTEGER"/>
+        <result column="owner_amount" property="ownerAmount" jdbcType="DECIMAL"/>
+        <result column="discount_amount" property="discountAmount" jdbcType="DECIMAL"/>
+
+        <result column="carrier_amount" property="carrierAmount" jdbcType="DECIMAL"/>
+        <result column="total_amount" property="totalAmount" jdbcType="DECIMAL"/>
+        <result column="status" property="status" jdbcType="TINYINT"/>
+        <result column="is_first" property="isFirst" jdbcType="TINYINT"/>
+        <result column="cancel_type" property="cancelType" jdbcType="TINYINT"/>
+        <result column="cancel_reason" property="cancelReason" jdbcType="VARCHAR"/>
+        <result column="cancel_time" property="cancelTime" jdbcType="TIMESTAMP"/>
+        <result column="create_time" property="createTime" jdbcType="TIMESTAMP"/>
+        <result column="update_time" property="updateTime" jdbcType="TIMESTAMP"/>
+        <result column="is_deleted" property="isDeleted" jdbcType="TINYINT"/>
+        <result column="order_from" property="orderFrom"/>
+        <result column="end_time" property="endTime"/>
+        <result column="driver_name" property="driverName"/>
+
+        <result column="is_test" property="isTest"/>
+        <result column="require_temp" property="requireTemp"/>
+        <result column="stream_type" property="streamType"/>
+        <result column="stream_admin_id" property="streamAdminId"/>
+        <result column="valuation_type" property="valuationType"/>
+        <result column="settle_type" property="settleType"/>
+        <result column="recash_type" property="recashType"/>
+        <result column="charge_status" property="chargeStatus"/>
+    </resultMap>
+    <!--CMS系统-->
+    <resultMap id="OrderExtendsMap" extends="OrderMap" type="com.malicn.server.domain.order.Order">
+        <result column="owner_name" property="ownerName"/>
+        <result column="company_name" property="companyName"/>
+        <result column="mobile" property="ownerMobile"/>
+        <result column="adminName" property="adminName"/>
+        <result column="orderIdString" property="orderIdString"/>
+        <result column="deposite_detail_id" property="depositeDetailId"/>
+        <result column="order_type" property="orderType"/>
+        <result column="confirm_time" property="confirmTime"/>
+        <result column="cargo_sub_id" property="cargoCtgrySubId"/>
+        <result column="cargo_sub_name" property="cargoCtgrySubName"/>
+        <result column="cargo_piece" property="cargoPiece"/>
+        <result column="settle_freight_type" property="settleFreightType"/>
+        <result column="orderState" property="orderState"/>
+        <result column="maker_name" property="makerName" jdbcType="VARCHAR" />
+        <result column="maker_mobile" property="makerMobile" jdbcType="VARCHAR" />
+        <result column="link_man" property="linkMan" jdbcType="VARCHAR" />
+        <result column="maker_id" property="makerId"  jdbcType="INTEGER"/>
+    </resultMap>
+
+    <sql id="AllColumn">
+        order_id,owner_id,carrier_id,driver_id,driver_head_img,driver_name,
+        driver_mobile,vehicle_id,vehicle_type,plate_no,vehicle_len,
+        start_name,start_id,arrive_name,arrive_id,weight,start_date,arrive_date,
+        cargo_ctgry_id,cargo_ctgry_name,start_strg_id,
+        start_strg_name,start_address,start_contact,start_con_tel,arrive_strg_id,
+        arrive_strg_name,arrive_contact,arrive_con_tel,arrive_address,owner_msg,route_id,
+        unit_price,find_vehl_num,
+        total_amount,status,is_first,carrier_amount,discount_amount, owner_amount,
+        cancel_type,cancel_reason,cancel_time,
+        create_time,update_time,charge_status,
+        <!--2017-12-04 cms 1.4.2 新增字段 订单类getOrders型和确认订单时间 -->
+        order_type,confirm_time,
+        <!--@author qun.xu @desc 超级司机增加的两个字段-->
+        order_from,end_time,
+        <!--@author qun.xu  @desc cms 1.0.1 增加温度要求，引流-->
+        require_temp,stream_type,is_test,owner_name,company_name,
+        <!--@author qun.xu  @desc cms 1.2.0 -->
+        stream_admin_id, valuation_type, settle_type,
+        <!--@author qun.xu  @desc cms 1.3.0 结算-->
+        deposite_detail_id,
+        <!-- @author chendezhi @desc cms 1.5.0 增加货物细分类 -->
+        cargo_sub_id,cargo_sub_name,
+        <!-- @author lianrongxiang @desc cms 1.6.0 增加货物件数 订单运费结算状态 -->
+        cargo_piece,settle_freight_type
+    </sql>
+
+    <sql id="selectOwner">
+    select a.real_name, a.company_name, a.user_id, b.mobile,company_auth_status   from  ml_user_owner a
+    left join ml_user_base b on a.user_id = b.user_id
+  </sql>
+    <!-- 货主端 Mapper Start -->
+    <!-- 创建订单 -->
+    <insert id="saveOrder" parameterType="com.malicn.server.domain.order.Order">
+      INSERT INTO ml_order (
+      order_id,owner_id,start_name,start_id,arrive_name,arrive_id,weight,start_date,
+      cargo_ctgry_id,cargo_ctgry_name,start_strg_id,
+      start_strg_name,start_address,start_contact,start_con_tel,arrive_strg_id,
+      arrive_strg_name,arrive_contact,arrive_con_tel,arrive_address,owner_msg,route_id,
+      unit_price,find_vehl_num,
+      total_amount,status,is_first,create_time,update_time
+      <if test="streamType!=null and streamType!=0">
+          ,stream_type
+      </if>
+      )
+      VALUES (
+      #{orderId},#{ownerId},#{startName},#{startId},#{arriveName},#{arriveId},#{weight},#{startDate},#{cargoCtgryId},#{cargoCtgryName},#{startStrgId},
+      #{startStrgName},#{startAddress},#{startContact},#{startConMobile},#{arriveStrgId},#{arriveStrgName},#{arriveContact},#{arriveConMobile},#{arriveAddress},
+      #{ownerMsg},#{routeId},#{unitPrice},#{findVehlNum},0,0,#{isFirst},now(),now()
+        <if test="streamType!=null and streamType!=0">
+            ,#{streamType}
+        </if>
+      )
+    </insert>
+
+    <insert id="insertSelective" parameterType="com.malicn.server.domain.order.Order">
+        insert into ml_order
+        <trim prefix="(" suffix=")" suffixOverrides=",">
+            <if test="orderId != null">
+                order_id,
+            </if>
+            <if test="ownerId != null">
+                owner_id,
+            </if>
+            <if test="carrierId != null">
+                carrier_id,
+            </if>
+            <if test="driverId != null">
+                driver_id,
+            </if>
+            <if test="driverHeadImg != null">
+                driver_head_img,
+            </if>
+            <if test="driverName != null">
+                driver_name,
+            </if>
+            <if test="driverMobile != null">
+                driver_mobile,
+            </if>
+            <if test="vehicleId != null">
+                vehicle_id,
+            </if>
+            <if test="vehicleType != null">
+                vehicle_type,
+            </if>
+            <if test="plateNo != null">
+                plate_no,
+            </if>
+            <if test="vehicleLen != null">
+                vehicle_len,
+            </if>
+            <if test="startName != null">
+                start_name,
+            </if>
+            <if test="startId != null">
+                start_id,
+            </if>
+            <if test="arriveName != null">
+                arrive_name,
+            </if>
+            <if test="arriveId != null">
+                arrive_id,
+            </if>
+            <if test="weight != null">
+                weight,
+            </if>
+            <if test="cargoCtgryId != null">
+                cargo_ctgry_id,
+            </if>
+            <if test="cargoCtgryName != null">
+                cargo_ctgry_name,
+            </if>
+            <if test="startDate != null">
+                start_date,
+            </if>
+            <if test="startStrgId != null">
+                start_strg_id,
+            </if>
+            <if test="startStrgName != null">
+                start_strg_name,
+            </if>
+            <if test="startAddress != null">
+                start_address,
+            </if>
+            <if test="startContact != null">
+                start_contact,
+            </if>
+            <if test="startConMobile != null">
+                start_con_tel,
+            </if>
+            <if test="arriveDate != null">
+                arrive_date,
+            </if>
+            <if test="arriveStrgId != null">
+                arrive_strg_id,
+            </if>
+            <if test="arriveStrgName != null">
+                arrive_strg_name,
+            </if>
+            <if test="arriveContact != null">
+                arrive_contact,
+            </if>
+            <if test="arriveConMobile != null">
+                arrive_con_tel,
+            </if>
+            <if test="arriveAddress != null">
+                arrive_address,
+            </if>
+            <if test="ownerMsg != null">
+                owner_msg,
+            </if>
+            <if test="routeId != null">
+                route_id,
+            </if>
+            <if test="unitPrice != null">
+                unit_price,
+            </if>
+            <if test="findVehlNum != null">
+                find_vehl_num,
+            </if>
+            <if test="ownerAmount != null">
+                owner_amount,
+            </if>
+            <if test="discountAmount != null">
+                discount_amount,
+            </if>
+            <if test="carrierAmount != null">
+                carrier_amount,
+            </if>
+            <if test="totalAmount != null">
+                total_amount,
+            </if>
+            <if test="status != null">
+                status,
+            </if>
+            <if test="isFirst != null">
+                is_first,
+            </if>
+            <if test="cancelType != null">
+                cancel_type,
+            </if>
+            <if test="cancelReason != null">
+                cancel_reason,
+            </if>
+            <if test="cancelTime != null">
+                cancel_time,
+            </if>
+            <if test="isDeleted != null">
+                is_deleted,
+            </if>
+            create_time
+        </trim>
+        <trim prefix="values (" suffix=")" suffixOverrides=",">
+            <if test="orderId != null">
+                #{orderId,jdbcType=BIGINT},
+            </if>
+            <if test="ownerId != null">
+                #{ownerId,jdbcType=BIGINT},
+            </if>
+            <if test="carrierId != null">
+                #{carrierId,jdbcType=BIGINT},
+            </if>
+            <if test="driverId != null">
+                #{driverId,jdbcType=BIGINT},
+            </if>
+            <if test="driverHeadImg != null">
+                #{driverHeadImg,jdbcType=VARCHAR},
+            </if>
+            <if test="driverName != null">
+                #{driverName,jdbcType=VARCHAR},
+            </if>
+            <if test="driverMobile != null">
+                #{driverMobile,jdbcType=VARCHAR},
+            </if>
+            <if test="vehicleId != null">
+                #{vehicleId,jdbcType=BIGINT},
+            </if>
+            <if test="vehicleType != null">
+                #{vehicleType,jdbcType=TINYINT},
+            </if>
+            <if test="plateNo != null">
+                #{plateNo,jdbcType=VARCHAR},
+            </if>
+            <if test="vehicleLen != null">
+                #{vehicleLen,jdbcType=DECIMAL},
+            </if>
+            <if test="startName != null">
+                #{startName,jdbcType=VARCHAR},
+            </if>
+            <if test="startId != null">
+                #{startId,jdbcType=INTEGER},
+            </if>
+            <if test="arriveName != null">
+                #{arriveName,jdbcType=VARCHAR},
+            </if>
+            <if test="arriveId != null">
+                #{arriveId,jdbcType=INTEGER},
+            </if>
+            <if test="weight != null">
+                #{weight,jdbcType=DECIMAL},
+            </if>
+            <if test="cargoCtgryId != null">
+                #{cargoCtgryId,jdbcType=VARCHAR},
+            </if>
+            <if test="cargoCtgryName != null">
+                #{cargoCtgryName,jdbcType=VARCHAR},
+            </if>
+            <if test="startDate != null">
+                #{startDate,jdbcType=TIMESTAMP},
+            </if>
+            <if test="startStrgId != null">
+                #{startStrgId,jdbcType=BIGINT},
+            </if>
+            <if test="startStrgName != null">
+                #{startStrgName,jdbcType=VARCHAR},
+            </if>
+            <if test="startAddress != null">
+                #{startAddress,jdbcType=VARCHAR},
+            </if>
+            <if test="startContact != null">
+                #{startContact,jdbcType=VARCHAR},
+            </if>
+            <if test="startConMobile != null">
+                #{startConMobile,jdbcType=VARCHAR},
+            </if>
+            <if test="arriveDate != null">
+                #{arriveDate,jdbcType=TIMESTAMP},
+            </if>
+            <if test="arriveStrgId != null">
+                #{arriveStrgId,jdbcType=BIGINT},
+            </if>
+            <if test="arriveStrgName != null">
+                #{arriveStrgName,jdbcType=VARCHAR},
+            </if>
+            <if test="arriveContact != null">
+                #{arriveContact,jdbcType=VARCHAR},
+            </if>
+            <if test="arriveConMobile != null">
+                #{arriveConMobile,jdbcType=VARCHAR},
+            </if>
+            <if test="arriveAddress != null">
+                #{arriveAddress,jdbcType=VARCHAR},
+            </if>
+            <if test="ownerMsg != null">
+                #{ownerMsg,jdbcType=VARCHAR},
+            </if>
+            <if test="routeId != null">
+                #{routeId,jdbcType=INTEGER},
+            </if>
+            <if test="unitPrice != null">
+                #{unitPrice,jdbcType=DECIMAL},
+            </if>
+            <if test="findVehlNum != null">
+                #{findVehlNum,jdbcType=INTEGER},
+            </if>
+            <if test="ownerAmount != null">
+                #{ownerAmount,jdbcType=DECIMAL},
+            </if>
+            <if test="discountAmount != null">
+                #{discountAmount,jdbcType=DECIMAL},
+            </if>
+            <if test="carrierAmount != null">
+                #{carrierAmount,jdbcType=DECIMAL},
+            </if>
+            <if test="totalAmount != null">
+                #{totalAmount,jdbcType=DECIMAL},
+            </if>
+            <if test="status != null">
+                #{status,jdbcType=TINYINT},
+            </if>
+            <if test="isFirst != null">
+                #{isFirst,jdbcType=TINYINT},
+            </if>
+            <if test="cancelType != null">
+                #{cancelType,jdbcType=TINYINT},
+            </if>
+            <if test="cancelReason != null">
+                #{cancelReason,jdbcType=VARCHAR},
+            </if>
+            <if test="cancelTime != null">
+                #{cancelTime,jdbcType=TIMESTAMP},
+            </if>
+            <if test="isDeleted != null">
+                #{isDeleted,jdbcType=TINYINT},
+            </if>
+            #{createTime,jdbcType=TIMESTAMP}
+        </trim>
+    </insert>
+
+
+    <!-- 查询订单详情 -->
+    <select id="getOrderById" parameterType="java.lang.Long" resultMap="OrderExtendsMap">
+        select
+        <include refid="AllColumn"/>
+        from ml_order where order_id = #{orderId}
+    </select>
+
+
+    <!-- 查询订单列表 -->
+    <select id="listOrdersByStatus" resultMap="OrderMap">
+        SELECT order_id, start_name, arrive_name, start_date, arrive_date, status, total_amount, discount_amount,
+        owner_amount
+        FROM ml_order WHERE owner_id = #{userId}
+        <choose>
+            <when test="status == 5">
+                AND status IN (4, 5)
+            </when>
+            <when test="status != null and status != 5">
+                AND status = #{status}
+            </when>
+        </choose>
+        and is_deleted=0
+        and order_from != 2
+        order by update_time Desc
+    </select>
+
+    <!-- 更新订单状态 -->
+    <update id="acceptByOrderId">
+        UPDATE ml_order set status=#{status}
+        <if test="status == 6">
+            ,end_time=now()
+        </if>
+        WHERE order_id=#{orderId}
+    </update>
+
+    <update id="updateOrderStatus">
+        UPDATE ml_order
+        SET status = #{status}, discount_amount = #{discountAmount}, owner_amount = #{ownerAmount}
+        WHERE order_id = #{orderId}
+    </update>
+
+
+    <update id="updateChargeStatusAndStatus">
+    UPDATE ml_order
+    SET status = #{status}, discount_amount = #{discountAmount}, owner_amount = #{ownerAmount},charge_status=#{chargeStatus}
+    WHERE order_id = #{orderId}
+  </update>
+
+    <!-- 删除订单 -->
+    <update id="removeByOrderId" parameterType="java.lang.Long">
+      UPDATE ml_order set is_deleted=1 where order_id=#{orderId}
+    </update>
+
+    <!-- 搜索订单 -->
+    <select id="listOrderByParams" resultMap="OrderMap">
+        select order_id, start_name, arrive_name, start_date, arrive_date, status, total_amount, discount_amount,
+        owner_amount
+        from ml_order
+        where owner_id=#{userId}
+        <if test="startRegionId != null">
+            and start_id=#{startRegionId}
+        </if>
+        <if test="arriveRegionId != null">
+            and arrive_id=#{arriveRegionId}
+        </if>
+        and is_deleted=0
+        and order_from != 2
+        order by update_time Desc
+    </select>
+
+    <!-- 检测用户是否首单 -->
+    <select id="countOrders" resultType="java.lang.Integer" parameterType="java.lang.Long">
+      SELECT COUNT(order_id) as countOrder from ml_order where owner_id=#{userId}
+    </select>
+
+    <!-- 根据订单ID查询 车主到款金额 和车主ID -->
+    <select id="getOrderInfo" resultMap="OrderMap" parameterType="java.lang.Long">
+        SELECT
+        <include refid="AllColumn"/>
+        from ml_order where order_id=#{orderId}
+    </select>
+
+    <!-- 计算用户待确定状态订单数 -->
+    <select id="countDqdOrders" resultType="java.lang.Integer" parameterType="java.lang.Long">
+        SELECT COUNT(order_id) as countOrder from ml_order where owner_id=#{userId} and status = 0 and is_deleted = 0 ;
+    </select>
+
+    <!-- 计算司机未完成订单数 -->
+    <select id="countUnDoneOrders" resultType="java.lang.Integer" parameterType="java.lang.Long">
+    SELECT COUNT(order_id) as countOrder from ml_order where driver_id=#{driverId}
+    and status in(1,3,4,5)  and is_deleted = 0 ;
+  </select>
+
+    <!-- 根据用户id、订单id获取货主应付金额 -->
+    <select id="getOwnerAmountByUserIdAndOrderId" resultType="java.math.BigDecimal">
+        SELECT owner_amount
+        FROM ml_order
+        WHERE owner_id = #{userId} AND order_id = #{orderId} AND is_deleted = 0
+    </select>
+    <!--  根据userId 查询待支付和待验收的订单  -->
+    <select id="getOrderByStatus" resultMap="OrderMap" parameterType="java.lang.Long">
+        SELECT
+        <include refid="AllColumn"/>
+        FROM ml_order
+        WHERE (status=5 or status=3 or status=0) and is_deleted=0 and owner_id=#{userId}
+    </select>
+    <!-- 查询所有正在处理的订单的总金额 -->
+    <select id="getCountOrdingTotalAmount" resultType="java.math.BigDecimal">
+      SELECT SUM(total_amount) AS sumTotalAmount FROM ml_order WHERE status NOT IN(0,2,6) AND owner_id=#{userId}
+  </select>
+
+
+    <!-- 查询用户最近的一条订单 -->
+    <select id="getLatelyOrder" resultMap="OrderMap">
+      SELECT cargo_ctgry_id, cargo_ctgry_name FROM ml_order WHERE owner_id = #{userId} ORDER BY create_time DESC LIMIT 1
+  </select>
+
+    <!-- 因为线下汇款并没有操作ml_order表,所以update_time没有更新，所以我们手动更新ml_order表的update_time -->
+    <update id="updateUpdateTime" parameterType="java.lang.Long">
+      UPDATE ml_order SET update_time = now() WHERE order_id = #{orderId}
+  </update>
+
+    <!-- 查询用户首单订单信息 -->
+    <select id="getFirstOrders" resultMap="OrderMap" parameterType="java.lang.Long">
+        SELECT
+        <include refid="AllColumn"/>
+        FROM ml_order
+        WHERE is_first = 1
+        AND owner_id = #{userId}
+        limit 1;
+    </select>
+
+    <!--  -->
+    <update id="updateOrderBySupplement" parameterType="com.malicn.server.domain.order.Order">
+        UPDATE ml_order
+        <!-- 前缀给set  最后的，去掉 -->
+        <set>
+            <if test="startDate != null and startDate != ''">
+                start_date = #{startDate},
+            </if>
+            <if test="startStrgId != null">
+                start_strg_id = #{startStrgId},
+            </if>
+            <if test="startStrgName != null and startStrgName != ''">
+                start_strg_name = #{startStrgName},
+            </if>
+            <if test="startContact != null and startContact != ''">
+                start_contact = #{startContact},
+            </if>
+            <if test="startConMobile != null and startConMobile != ''">
+                start_con_tel = #{startConMobile},
+            </if>
+            <if test="arriveStrgId != null">
+                arrive_strg_id = #{arriveStrgId},
+            </if>
+            <if test="arriveStrgName != null and arriveStrgName != ''">
+                arrive_strg_name = #{arriveStrgName},
+            </if>
+            <if test="arriveContact != null and arriveContact != ''">
+                arrive_contact = #{arriveContact},
+            </if>
+            <if test="arriveConMobile != null and arriveConMobile != ''">
+                arrive_con_tel = #{arriveConMobile},
+            </if>
+            <if test="ownerMsg != null">
+                owner_msg = #{ownerMsg},
+            </if>
+            <if test="startAddress != null and startAddress != ''">
+                start_address = #{startAddress},
+            </if>
+            <if test="arriveAddress != null and arriveAddress != ''">
+                arrive_address = #{arriveAddress},
+            </if>
+            <if test="cargoCtgryId != null and cargoCtgryId!=''">
+                cargo_ctgry_id = #{cargoCtgryId},
+            </if>
+            <if test="cargoCtgryName != null and cargoCtgryName != ''">
+                cargo_ctgry_name = #{cargoCtgryName},
+            </if>
+            <!-- @author chendezhi @desc cms 1.5.0 增加货物细分类 -->
+            <if test="cargoCtgrySubId != null and cargoCtgrySubId!=''">
+                cargo_sub_id = #{cargoCtgrySubId},
+            </if>
+            <if test="cargoCtgrySubName != null and cargoCtgrySubName != ''">
+                cargo_sub_name = #{cargoCtgrySubName},
+            </if>
+            <if test="weight != null">
+                weight = #{weight},
+            </if>
+            <!--@author qun.xu 温度要求和货主姓名、公司名称-->
+            <if test="requireTemp != null and requireTemp!=''">
+                require_temp = #{requireTemp},
+            </if>
+            <if test="ownerName != null and ownerName!=''">
+                owner_name = #{ownerName},
+            </if>
+            <if test="companyName != null and companyName!=''">
+                company_name = #{companyName},
+            </if>
+            <if test="streamType != null and streamType!=''">
+                stream_type = #{streamType},
+            </if>
+            <!--<if test="streamAdminId != null and streamAdminId!=''">-->
+            <!--stream_admin_id = #{streamAdminId},-->
+            <!--</if>-->
+            <choose>
+                <when test="streamAdminId!=null and streamAdminId!='' and streamAdminId!=0">
+                    stream_admin_id = #{streamAdminId},
+                </when>
+                <otherwise>
+                    stream_admin_id =null,
+                </otherwise>
+            </choose>
+            update_time = now()
+        </set>
+
+        WHERE order_id = #{orderId}
+    </update>
+    <!-- 货主端 Mapper End -->
+
+    <!-- ============================================================================================ 车主端 Mapper Start ========================================================-->
+    <!-- 查询车主订单列表 -->
+    <select id="listOrdersByStatusForCarrier" resultMap="OrderMap">
+        SELECT order_id, owner_id, start_name, arrive_name, start_date, arrive_date, status, carrier_amount
+        FROM ml_order WHERE status NOT IN(0,2)
+        <if test="from == 2">
+            AND driver_id = #{userId}
+        </if>
+        <if test="from == 3">
+            AND carrier_id = #{userId}
+        </if>
+        <if test="status != null">
+            AND status = #{status}
+        </if>
+        AND is_deleted = 0
+        AND order_from != 2
+        ORDER BY update_time DESC
+    </select>
+
+    <!-- 查询车主的待支付和待验收的订单 -->
+    <select id="getOrderByStatusForCarrier" resultMap="OrderMap" parameterType="java.lang.Long">
+      SELECT a.order_id FROM ml_order a
+      WHERE (a.status = 5 or a.status = 3) and a.is_deleted = 0 and a.carrier_id = #{userId}
+  </select>
+
+    <!-- 搜索订单 -->
+    <select id="listOrderByParamsForCarrier" resultMap="OrderMap">
+        select order_id, start_name, arrive_name, start_date, arrive_date, status, carrier_amount from ml_order
+        where is_deleted=0 AND status NOT IN(0,2)
+        <if test="from == 2">
+            AND driver_id = #{userId}
+        </if>
+        <if test="from == 3">
+            AND carrier_id = #{userId}
+        </if>
+        <if test="startRegionId != null">
+            AND start_id=#{startRegionId}
+        </if>
+        <if test="arriveRegionId != null">
+            AND arrive_id=#{arriveRegionId}
+        </if>
+        order by update_time Desc
+    </select>
+    <!-- 查询待卸货订单数量 -->
+    <select id="countDXHOrders" resultType="java.lang.Integer">
+    SELECT count(order_id) FROM ml_order where driver_id = #{driverId} AND is_deleted = 0 AND status = 4
+  </select>
+
+    <!-- 查询代揽收订单数量 -->
+    <select id="countDLSOrders" resultType="java.lang.Integer">
+    SELECT count(order_id) FROM ml_order where driver_id = #{driverId} AND is_deleted = 0 AND status = 1
+  </select>
+
+    <!-- 查询未完成的订单 -->
+    <select id="countWWCOrders" resultType="java.lang.Integer">
+    SELECT COUNT(order_id) FROM ml_order where vehicle_id = #{vehicleId} AND is_deleted = 0 AND status != 6 AND status != 2
+  </select>
+
+    <!-- 超级司机配货量明细 @xieqiujin -->
+    <select id="listDriverMath" resultMap="OrderMap">
+        SELECT
+        <include refid="AllColumn"/>
+        FROM
+        ml_order
+        WHERE #{createTime} &lt;= end_time
+        AND #{expiredDate} &gt;= end_time
+        AND driver_id = #{userId}
+        AND order_from = 1
+        AND status = 6
+        ORDER BY end_time DESC
+    </select>
+
+    <select id="getTotalWeight" resultType="java.math.BigDecimal">
+    SELECT sum(weight) FROM ml_order
+    WHERE #{createTime} &lt;= end_time
+    AND #{expiredDate} &gt;= end_time
+    AND driver_id = #{userId}
+    AND order_from = 1
+    AND status = 6
+  </select>
+
+
+    <!--==================================================================================== 车主端 Mapper End ==============================================================-->
+
+
+    <!--======================@author qun.xu=========================================== CMS 订单相关操作 ==============================================================-->
+    <!--根据ID列举订单-->
+    <select id="listByIdsAndStatus" resultMap="OrderExtendsMap">
+        select
+        t.order_id,t.owner_id,t.carrier_id,t.driver_id,t.driver_head_img,t.driver_name,
+        t.driver_mobile,t.vehicle_id,t.vehicle_type,t.plate_no,t.vehicle_len,
+        t.start_name,t.start_id,t.arrive_name,t.arrive_id,t.weight,t.start_date,t.arrive_date,
+        t.cargo_ctgry_id,t.cargo_ctgry_name,t.start_strg_id,
+        t.start_strg_name,t.start_address,t.start_contact,t.start_con_tel,t.arrive_strg_id,
+        t.arrive_strg_name,t.arrive_contact,t.arrive_con_tel,t.arrive_address,t.owner_msg,route_id,
+        t.unit_price,t.find_vehl_num,
+        t.total_amount,t.status,is_first,t.carrier_amount,t.discount_amount, t.owner_amount,
+        t.cancel_type,t.cancel_reason,t.cancel_time,
+        t.create_time,t.update_time,
+        <!--@author qun.xu @desc 超级司机增加的两个字段-->
+        t.order_from,t.end_time,
+        <!--@author qun.xu  @desc cms 1.0.1 增加温度要求，引流-->
+        t.require_temp,t.stream_type,t.is_test,t.owner_name,
+        t.company_name,
+        <!--@author qun.xu  @desc  增加货主电话-->
+        base.mobile
+        from ml_order t
+        inner join ml_user_base base
+        on t.owner_id = base.user_id
+        where
+        t.order_id in
+        <foreach collection="list" item="orderId" open="(" close=")" separator=",">
+            #{orderId}
+        </foreach>
+        <if test="ownerMobile!=null and ownerMobile!=''">
+            and base.mobile like concat('%',#{ownerMobile},'%')
+        </if>
+        and t.status = 0
+        order by t.create_time desc
+    </select>
+
+    <!-- 查询需要补充的订单列表 -->
+    <select id="listOrderBySupplement" resultMap="OrderExtendsMap">
+        SELECT t.owner_id, t.order_id, t.create_time, t.start_name, t.arrive_name, t.weight, t.cargo_ctgry_name,
+        t.start_id, t.arrive_id,
+        flow.update_time,
+        case when owner.personal_auth_status = 1 then owner.real_name
+        when owner.personal_auth_status = 0 then t.owner_name
+        end as owner_name,
+        case when owner.company_auth_status = 1 then owner.company_name
+        when owner.company_auth_status = 0 then t.company_name
+        end as company_name,
+        base.mobile as mobile,
+        flow.updator AS updator,
+        t.is_test
+        FROM ml_order t
+        left JOIN cms_order_flow flow
+        ON flow.order_id = t.order_id
+        left JOIN ml_user_base base
+        ON base.user_id = t.owner_id
+        left join ml_user_owner owner
+        on t.owner_id = owner.user_id
+        WHERE t.status = 0
+        AND t.is_deleted = 0
+        AND order_from != 2 <!-- 过滤外来订单 app 端在确认订单时 更改来源，修改订单状态， 但是Excel导入时  默认是2 状态 0 -->
+        <!--货主电话-->
+        <if test="ownerMobile != null and ownerMobile != ''">
+            AND (LOCATE(#{ownerMobile},base.mobile) > 0)
+        </if>
+        <if test="orderIds != null and orderIds != ''">
+            AND (LOCATE(#{orderIds}, t.order_id) > 0)
+        </if>
+        <if test="orderStatus == 0 or orderStatus == ''">
+            AND flow.flow_status = (flow.flow_status = 0 or flow.flow_status is null)
+        </if>
+        <if test="orderStatus == 2"><!-- 如果选择状态为 已完善 -->
+            AND flow.flow_status = 1
+        </if>
+        <if test="orderStatus == 1"> <!-- 如果选择状态为 未完善 -->
+            AND (flow.flow_status = 0 or flow.flow_status is null)
+        </if>
+        ORDER by t.create_time DESC
+    </select>
+
+    <!-- 查询根据路线已完成的订单 -->
+    <select id="listByRoute" resultMap="OrderMap">
+        select
+        <include refid="AllColumn"/>
+        from ml_order t
+        where t.start_id = #{startId}
+        and t.arrive_id = #{arriveId}
+        and t.owner_id = #{ownerId}
+        and t.weight>=1
+        and t.status = 6
+        and t.end_time >= date_add(now(),INTERVAL-6 month)
+        order by t.end_time desc
+    </select>
+
+    <update id="updateOrderByConfirm" parameterType="com.malicn.server.domain.order.Order">
+        update ml_order
+        <set>
+            <if test="carrierId!=null and carrierId!=''">
+                carrier_id=#{carrierId},
+            </if>
+            <if test="driverId!=null and driverId!=''">
+                driver_id=#{driverId},
+            </if>
+            <if test="driverHeadImg!=null and driverHeadImg!=''">
+                driver_head_img=#{driverHeadImg},
+            </if>
+            <if test="driverName!=null and driverName!=''">
+                driver_name=#{driverName},
+            </if>
+            <if test="driverMobile!=null and driverMobile!=''">
+                driver_mobile=#{driverMobile},
+            </if>
+            <if test="vehicleId!=null and vehicleId!=''">
+                vehicle_id=#{vehicleId},
+            </if>
+            <if test="vehicleType!=0 and vehicleType!=''">
+                vehicle_type=#{vehicleType},
+            </if>
+            <if test="plateNo!=null and plateNo!=''">
+                plate_no=#{plateNo},
+            </if>
+            <if test="vehicleLen!=null and vehicleLen!=''">
+                vehicle_len=#{vehicleLen},
+            </if>
+            <if test="weight!=0 and weight!=''">
+                weight=#{weight},
+            </if>
+            <if test="cargoCtgryId!=null and cargoCtgryId!='' ">
+                cargo_ctgry_id=#{cargoCtgryId},
+            </if>
+            <if test="cargoCtgryName!=null and cargoCtgryName!=''">
+                cargo_ctgry_name=#{cargoCtgryName},
+            </if>
+            <!-- @author chendezhi @desc cms 1.5.0 增加货物细分类 -->
+            <if test="cargoCtgrySubId != null and cargoCtgrySubId!=''">
+                cargo_sub_id = #{cargoCtgrySubId},
+            </if>
+            <if test="cargoCtgrySubName != null and cargoCtgrySubName != ''">
+                cargo_sub_name = #{cargoCtgrySubName},
+            </if>
+            <if test="cargoPiece != null and cargoPiece !=0">
+                cargo_piece = #{cargoPiece},
+            </if>
+            <if test="settleFreightType != null and settleFreightType !=''">
+                settle_freight_type = #{settleFreightType},
+            </if>
+            <if test="startDate != null and startDate!=''">
+                start_date = #{startDate},
+            </if>
+            <if test="startStrgId != null and startStrgId!=''">
+                start_strg_id = #{startStrgId},
+            </if>
+            <if test="startStrgName != null and startStrgName!=''">
+                start_strg_name = #{startStrgName},
+            </if>
+            <if test="startContact != null and startContact!=''">
+                start_contact = #{startContact},
+            </if>
+            <if test="startConMobile != null and startConMobile!=''">
+                start_con_tel = #{startConMobile},
+            </if>
+            <if test="arriveStrgId != null and arriveStrgId!=''">
+                arrive_strg_id = #{arriveStrgId},
+            </if>
+            <if test="arriveStrgName != null and arriveStrgName!=''">
+                arrive_strg_name = #{arriveStrgName},
+            </if>
+            <if test="arriveContact != null and arriveContact!=''">
+                arrive_contact = #{arriveContact},
+            </if>
+            <if test="arriveConMobile != null and arriveConMobile!=''">
+                arrive_con_tel = #{arriveConMobile},
+            </if>
+            <if test="startAddress != null and startAddress!=''">
+                start_address = #{startAddress},
+            </if>
+            <if test="arriveAddress != null and arriveAddress!=''">
+                arrive_address = #{arriveAddress},
+            </if>
+            <if test="carrierAmount != null and carrierAmount!=''">
+                carrier_amount = #{carrierAmount},
+            </if>
+            <if test="totalAmount != null and totalAmount!=''">
+                total_amount = #{totalAmount},
+            </if>
+            <if test="ownerAmount != null and ownerAmount!=''">
+                owner_amount = #{ownerAmount},
+            </if>
+            <if test="status != null and status!=''">
+                status = #{status},
+            </if>
+            <if test="orderFrom != null and orderFrom!=''">
+                order_from = #{orderFrom},
+            </if>
+            <if test="isInvalid != null ">
+                is_invalid = #{isInvalid},
+            </if>
+            is_test = #{isTest},
+            <!--更新到达日期-->
+            <if test="arriveDate != null and arriveDate!=''">
+                arrive_date = #{arriveDate},
+            </if>
+            <!--@author qun.xu @desc 温度和引流-->
+            <if test="streamType != null and streamType!=''">
+                stream_type = #{streamType},
+            </if>
+            <if test="requireTemp != null and requireTemp!=''">
+                require_temp = #{requireTemp},
+            </if>
+            <if test="ownerName != null and ownerName!=''">
+                owner_name = #{ownerName},
+            </if>
+            <if test="companyName != null and companyName!=''">
+                company_name = #{companyName},
+            </if>
+            <choose>
+                <when test="streamAdminId!=null and streamAdminId!='' and streamAdminId!=0">
+                    stream_admin_id = #{streamAdminId},
+                </when>
+                <otherwise>
+                    stream_admin_id =null,
+                </otherwise>
+            </choose>
+            <!--<if test="streamAdminId != null and streamAdminId!='' or streamAdminId==0">-->
+            <!--stream_admin_id = #{streamAdminId},-->
+            <!--</if>-->
+            <!--@author qun.xu @version 1.2.0 @desc 计价方式,返现类型-->
+            <if test="valuationType != null and valuationType!=''">
+                valuation_type = #{valuationType},
+            </if>
+            <if test="recashType != null and recashType!=''">
+                recash_type = #{recashType},
+            </if>
+            <if test="settleType != null and settleType!=''">
+                settle_type = #{settleType},
+            </if>
+            <!-- 更新订单完成时间-->
+            <if test="endTime != null and endTime!=''">
+                end_time = #{endTime},
+            </if>
+            <if test="orderType != null and orderType!=''">
+                order_type = #{orderType},
+            </if>
+            <if test="confirmTime != null">
+                confirm_time = #{confirmTime},
+            </if>
+        </set>
+        WHERE order_id = #{orderId}
+    </update>
+
+    <update id="cancelOrder">
+        UPDATE ml_order
+        SET cancel_type = 1, cancel_reason = #{reason},
+        cancel_time = now(), is_invalid=#{isInvalid},
+        status = 2, cancel_reason_type = #{reasonType}
+        <if test="isTest!=null and isTest!=''">
+            <!--订单取消原因-->
+            ,is_test=#{isTest}
+        </if>
+        WHERE order_id = #{orderId}
+    </update>
+
+
+    <!--根据订单Ids 过滤去重的议价人和司机-->
+    <select id="listByIdsDisDriverIdAndCarrier" resultMap="OrderMap">
+        select
+        t.driver_id,
+        t.carrier_id,
+        t.driver_name,
+        t.vehicle_id,
+        t.driver_mobile
+        from ml_order t
+        where t.order_id in
+        <foreach collection="list" item="orderId" open="(" close=")" separator=",">
+            #{orderId}
+        </foreach>
+        and t.end_time >=date_add(now(), interval -3 month)  <!--3个月内-->
+        and t.status = 6
+        and t.carrier_id is not null <!-- 过滤调测试 环境的垃圾数据 -->
+        group by
+        t.driver_id,
+        t.carrier_id,
+        t.driver_name,
+        t.vehicle_id,
+        t.driver_mobile
+    </select>
+    <!--查询通知订单-->
+    <select id="listNoticeOrders" resultMap="OrderMap">
+        select
+        t.order_id,
+        t.create_time
+        from ml_order t
+        <!--
+         datediff(t.create_time,now()) = 3
+                and
+                -->
+        where status = 0 and t.order_from !='2'  <!--过滤调 已确认订单的 包含 excel 导入 但是状态为 0 的-->
+    </select>
+
+    <!--查询通知订单数量-->
+    <select id="countNoticeOrders" resultType="int">
+        <!--select-->
+        <!--count(1)-->
+        <!--from ml_order t-->
+        <!--&lt;!&ndash;-->
+        <!--datediff(t.create_time,now()) = 3-->
+        <!--and-->
+        <!--&ndash;&gt;-->
+        <!--where  status = 0   and t.order_from !='2'  &lt;!&ndash;过滤调 已确认订单的 包含 excel 导入 但是状态为 0 的&ndash;&gt;-->
+
+        select count(1) from cms_order_push t where t.push_count &lt;3
+
+    </select>
+
+
+    <!--更新通知次数-->
+    <select id="updateNoticeCount">
+      update
+       cms_order_push
+      set push_count = push_count+1
+      where push_count &lt; 3
+  </select>
+
+
+    <!--
+    * 查询流控中的订单 代揽收，待支付，待卸货，待验收
+    * 总控的人查询所有的订单，客服只查询分配给自己的订单
+    * @param orderStatus   订单状态
+    * @param orderId       订单Id
+    * @param ownerMobile   货主电话
+    * @return
+    -->
+    <select id="listFlowOrders" resultMap="OrderExtendsMap">
+        SELECT t.owner_id, t.order_id, t.create_time, t.start_name,
+        t.arrive_name, t.weight, t.cargo_ctgry_name, t.start_id, t.arrive_id,
+        t.status, t.owner_name, t.company_name, base.mobile, t.is_test,
+        t.driver_name, t.driver_mobile, t.total_amount, d.admin_name as adminName
+        FROM ml_order t
+        left JOIN ml_user_base base
+        ON base.user_id = t.owner_id
+        left join ml_user_owner owner
+        on t.owner_id = owner.user_id
+        left join cms_order_allot d
+        on t.order_id = d.order_id
+        left join cms_order_allot e
+        on t.order_id = e.order_id
+        WHERE t.is_deleted = 0
+        AND order_from != 2 <!-- 过滤外来订单 app 端在确认订单时 更改来源，修改订单状态， 但是Excel导入时  默认是2 状态 0 -->
+        <!--货主电话-->
+        <if test="ownerMobile != null and ownerMobile != ''">
+            AND (LOCATE(#{ownerMobile},base.mobile) > 0)
+        </if>
+        <if test="orderId != null and orderId != ''">
+            AND (LOCATE(#{orderId}, t.order_id) > 0)
+        </if>
+        <if test="ingStatus!=null and ingStatus==1">
+            <if test="orderStatus == '0' or orderStatus == ''">
+                AND t.status in (1,3,4,5)
+            </if>
+        </if>
+        <!--@author qun.xu @version cms1.3.10  @date 2017.10.25  @desc  流程装太（2. 历史流程 1.流控中）-->
+        <if test="ingStatus!=null and ingStatus==2">
+            <if test="orderStatus == 0 or orderStatus == ''">
+                AND t.status in (2,6)
+            </if>
+        </if>
+
+        <if test="orderStatus != 0 or orderStatus != ''">
+            AND t.status = #{orderStatus}
+        </if>
+        <!-- 如果不是总控， 并且不是admin 就查询属于自己的订单 -->
+        <if test="control == 0 and adminId != 1">
+            AND e.admin_id = #{adminId}
+        </if>
+        <!-- 如果是总控的话 -->
+        <if test="control == 1">
+            AND e.id IS NOT NULL
+        </if>
+        ORDER by t.create_time DESC
+    </select>
+
+
+    <!--
+      * 查询所有的订单
+      *
+      -->
+    <select id="selectOrderAll" resultMap="OrderExtendsMap">
+        SELECT
+        a.order_id,
+        a.STATUS,
+        a.start_name,
+        a.arrive_name,
+        a.owner_name,
+        a.company_name,
+        c.mobile,
+        a.driver_name,
+        a.driver_mobile,
+        a.recash_type,
+        a.settle_type,
+        a.charge_status,
+        a.weight,
+        a.order_from,
+        a.order_type,
+        a.total_amount,
+        a.owner_amount,
+        a.create_time,
+        a.is_deleted,
+        a.is_test,
+        a.settle_freight_type,
+        a.is_invalid
+        FROM ml_order a
+        INNER JOIN ml_user_base c ON c.user_id =a.owner_id
+        where 1=1
+        <if test="order.startDate !=null and order.startDate !=''">
+            and a.create_time &gt;=#{order.startDate}
+        </if>
+        <if test="order.endTime !=null and order.endTime !=''">
+            and a.create_time &lt;= #{order.endTime}
+        </if>
+        <if test="statusArray !=null and statusArray !='' ">
+            and a.status in
+            <foreach item="statusArray" collection="statusArray" open="(" separator="," close=")">
+                #{statusArray}
+            </foreach>
+        </if>
+        <if test="order.startConMobile !=null and order.startConMobile !=''">
+            and c.mobile like concat('%',#{order.startConMobile},'%')
+        </if>
+        <if test="order.orderIdString !=null and order.orderIdString!=''">
+            and a.order_id like concat('%',#{order.orderIdString},'%')
+        </if>
+        <if test="orderTypeArray !=null and orderTypeArray !=''">
+            and  a.order_type in
+            <foreach item="orderTypeArray" collection="orderTypeArray" open="(" separator="," close=")">
+                #{orderTypeArray}
+            </foreach>
+        </if>
+        <if test="order.recashType !=null and  order.recashType !=''">
+            and a.recash_type =#{order.recashType}
+        </if>
+        <choose>
+            <when test="order.orderState == 2">
+                and( a.confirm_time  is not  NULL and timestampadd(day,7,a.confirm_time)    &lt; now()
+                and a.end_time is NULL and a.cancel_time is NULL)
+            </when>
+            <when test="order.orderState == 1">
+                and !(a.confirm_time  is not  NULL and timestampadd(day,7,a.confirm_time)
+                and a.end_time is NULL and a.cancel_time is NULL)
+            </when>
+        </choose>
+        order by a.create_time desc
+    </select>
+
+
+
+
+    <select id="selectWalkOrderAll" resultMap="OrderExtendsMap">
+        SELECT
+        a.order_id,
+        a.STATUS,
+        a.cargo_ctgry_name,
+        a.start_name,
+        a.start_strg_name,
+        a.start_address,
+        a.start_date,
+        a.arrive_name,
+        a.arrive_strg_name,
+        a.arrive_address,
+        a.arrive_date,
+        a.owner_name,
+        a.company_name,
+        c.mobile,
+        a.driver_name,
+        a.driver_mobile,
+        a.recash_type,
+        a.settle_type,
+        a.charge_status,
+        a.weight,
+        a.order_from,
+        a.order_type,
+        a.total_amount,
+        a.owner_amount,
+        a.create_time,
+        a.is_test
+        FROM ml_order a
+        INNER JOIN ml_user_base c ON c.user_id =a.owner_id
+        where 1=1 AND a.is_deleted=0
+        <if test="startDate !=null ">
+            and a.create_time &gt;=#{startDate}
+        </if>
+        <if test="endTime !=null ">
+            and a.create_time &lt;= #{endTime}
+        </if>
+        <if test="status !=null ">
+            <choose>
+                <when test="status==3">
+                    and a.status in (1,3,4,5)
+                </when>
+                <otherwise>
+                    and a.status= #{status}
+                </otherwise>
+            </choose>
+
+        </if>
+        <if test="startConMobile !=null and startConMobile !=''">
+            and c.mobile like concat('%',#{startConMobile},'%')
+        </if>
+        <if test="orderIdString !=null and orderIdString!=''">
+            and a.order_id like concat('%',#{orderIdString},'%')
+        </if>
+        <if test="orderFrom !=null and  orderFrom !=''">
+            and a.order_from =#{orderFrom}
+        </if>
+        <if test="recashType !=null and  recashType !=''">
+            and a.recash_type =#{recashType}
+        </if>
+        order by a.create_time desc
+    </select>
+
+
+    <!--
+      * 查询所有已确定待揽收、待支付、待卸货、待验收订单订单
+      *
+      -->
+    <select id="findAllFlowAllot" resultMap="OrderExtendsMap">
+        SELECT
+        a.order_id,
+        a.create_time,
+        d.create_time as endTime,
+        a.start_name,
+        a.arrive_name,
+        a.owner_name,
+        a.company_name,
+        c.mobile,
+        a.owner_id
+        FROM ml_order a
+        INNER JOIN ml_user_base c ON c.user_id = a.owner_id
+        INNER JOIN ml_order_track d on d.order_id=a.order_id and d.model_id=2
+        left JOIN cms_order_allot e on e.order_id =a.order_id
+        where a.is_deleted=0 and a.status in(1,3,4,5) and a.order_from=1 and e.order_id is NULL
+        <if test="startConMobile !=null and startConMobile !=''">
+            and c.mobile like concat('%',#{startConMobile},'%')
+        </if>
+        <if test="orderIdString !=null and orderIdString !=''">
+            and a.order_id like concat('%',#{orderIdString},'%')
+        </if>
+        order by a.create_time desc
+    </select>
+
+
+    <!--导出订单详细-->
+    <select id="orderExcel" resultMap="OrderExtendsMap">
+        SELECT
+        a.order_id,
+        a. STATUS,
+        a.start_name,
+        a.cargo_sub_name,
+        a.order_type,
+        a.create_time,
+        a.arrive_name,
+        a.cargo_ctgry_name,
+        a.owner_name,
+        a.company_name,
+        a.order_type,
+        a.plate_no,
+        a.driver_name,
+        a.carrier_amount,
+        a.driver_mobile,
+        a.owner_amount,
+        a.start_date,
+        c.mobile,
+        a.start_strg_name,
+        a.start_address,
+        a.arrive_strg_name,
+        a.arrive_address,
+        a.owner_id,
+        <!--@author qun.xu @version 修改 引流类型 为大众APP时，显示大众APP-->
+        case when a.stream_type = 5  then '大众冷链APP'
+        else   d.name  end  as adminName,
+        a.weight,
+        a.cancel_time,
+        a.confirm_time
+        FROM ml_order a
+        INNER JOIN ml_user_base c ON c.user_id = a.owner_id
+        LEFT JOIN cms_sys_admin d ON d.id = a.stream_admin_id
+        WHERE 1=1
+        <if test="order.startDate !=null and order.startDate !=''">
+            and a.create_time &gt;=#{order.startDate}
+        </if>
+        <if test="order.endTime !=null and order.endTime!=''">
+            and a.create_time &lt;= #{order.endTime}
+        </if>
+        <if test="statusArray !=null and statusArray !='' ">
+                and a.status in
+                <foreach item="statusArray" collection="statusArray" open="(" separator="," close=")">
+                    #{statusArray}
+                </foreach>
+        </if>
+        <if test="order.startConMobile !=null and order.startConMobile !=''">
+            and c.mobile like concat('%',#{order.startConMobile},'%')
+        </if>
+        <if test="order.orderIdString !=null and order.orderIdString !=''">
+            and a.order_id like concat('%',#{order.orderIdString},'%')
+        </if>
+        <if test="orderTypeArray !=null and orderTypeArray !=''">
+            and  a.order_type in
+            <foreach item="orderTypeArray" collection="orderTypeArray" open="(" separator="," close=")">
+                #{orderTypeArray}
+            </foreach>
+        </if>
+        <if test="order.recashType !=null and  order.recashType !=''">
+            and a.recash_type =#{order.recashType}
+        </if>
+        <choose>
+            <when test="order.orderState == 2">
+                and (a.confirm_time  is not  NULL and timestampadd(day,7,a.confirm_time)   &lt; now()
+                and a.end_time is NULL and a.cancel_time is NULL)
+            </when>
+            <when test="order.orderState == 1">
+                and !(a.confirm_time  is not  NULL and timestampadd(day,7,a.confirm_time)
+                and a.end_time is NULL and a.cancel_time is NULL)
+            </when>
+        </choose>
+        order by a.create_time desc
+    </select>
+
+    <!--导出订单详细-->
+    <select id="exportQaOrder" resultMap="OrderExtendsMap">
+        SELECT
+                a.order_id,
+                a. STATUS,
+                a.start_name,
+                a.cargo_sub_name,
+                a.order_type,
+                a.create_time,
+                a.arrive_name,
+                a.cargo_ctgry_name,
+                a.owner_name,
+                a.company_name,
+                a.order_type,
+                a.plate_no,
+                a.driver_name,
+                a.carrier_amount,
+                a.driver_mobile,
+                a.owner_amount,
+                a.start_date,
+                c.mobile,
+                a.start_strg_name,
+                a.start_address,
+                a.arrive_strg_name,
+                a.arrive_address,
+                a.owner_id,
+                case when a.stream_type = 5  then '大众冷链APP'
+                else   d.name  end  as adminName,
+                a.weight,
+                a.cancel_time,
+                a.confirm_time
+        FROM cms_order_quality q LEFT JOIN ml_order a
+        ON q.order_id = a.order_id
+        INNER JOIN ml_user_base c ON c.user_id =a.owner_id
+        LEFT JOIN cms_sys_admin d ON d.id = a.stream_admin_id
+        WHERE 1=1
+        <if test="orderStatus!=null">
+            AND a.status = #{orderStatus}
+        </if>
+        <if test="orderId!=null and orderId!=''">
+            AND q.order_id like concat('%',#{orderId},'%')
+        </if>
+        <if test="status!=null">
+            AND q.status = #{status}
+        </if>
+        <if test="adminId!=null">
+            AND q.admin_id = #{adminId}
+        </if>
+        order by a.create_time desc
+    </select>
+
+
+
+    <!-- 调整引流 -->
+    <update id="updateStreamById">
+    UPDATE ml_order
+    SET stream_admin_id = #{streamAdminId}, stream_type = #{streamType}
+    WHERE order_id = #{orderId}
+  </update>
+    <update id="rollbackOrderById">
+    UPDATE ml_order
+    SET driver_name = NULL, driver_mobile = NULL, driver_id = NULL, driver_head_img = NULL,
+    vehicle_id = NULL, vehicle_type = NULL, vehicle_len = NULL,
+    carrier_id = NULL, plate_no = NULL,
+    owner_amount = NULL, carrier_amount = NULL, total_amount = NULL,
+    status = 0   <!-- cms 1.4.2 去除 stream_admin_id = NULL,-->
+    WHERE order_id = #{orderId}
+  </update>
+    <update id="updateWeightById">
+    UPDATE ml_order SET weight = #{weight}
+    WHERE order_id = #{orderId}
+  </update>
+    <update id="updateAmountById">
+    UPDATE ml_order SET total_amount = #{totalAmount}, carrier_amount = #{carrierAmount}
+    WHERE order_id = #{orderId}
+  </update>
+
+    <select id="queryOrderByKey" resultMap="OrderExtendsMap">
+        select
+        a.order_id,
+        a.owner_name,
+        a.company_name,
+        a.owner_id,
+        base.mobile,
+        a.total_amount,
+        a.deposite_detail_id
+        from
+        ml_order a
+        inner join ml_user_base base on a.owner_id = base.user_id
+        where a.is_deleted = 0
+        <if test="key!=null and key!=''">
+            and LOCATE(#{key},a.order_id) > 0
+        </if>
+        and a.status in (6,4,5)       <!--已完成的订单才能核销 (20171211 核销订单票结的类型时，扩大可选择的订单范围，由“已完成订单”扩大为“已完成、待卸货和待验收的订单)-->
+        and a.charge_status = 0<!--且未核销的订单-->
+        and a.settle_type = 1  <!--票结-->
+        order by a.end_time desc
+        limit 20
+    </select>
+
+
+    <select id="getOrders" resultMap="OrderExtendsMap">
+        SELECT
+        <include refid="AllColumn"/>
+        FROM ml_order
+        WHERE 1=1
+        <if test="userType == 1">
+            AND owner_id = #{userId}
+        </if>
+        <if test="userType == 2">
+            AND driver_id = #{userId}
+        </if>
+        <if test="userType == 4">
+            AND order_type in (3,4,5,6)
+        </if>
+        AND status > 2
+        AND pay_status = 1
+        AND is_deleted = 0
+        AND settle_freight_type = 1
+    </select>
+
+    <select id="getOwnerSettle" resultMap="OrderExtendsMap">
+    SELECT
+	COUNT(a.order_id) as orderId,
+	a.owner_id as ownerId,
+	a.owner_name as ownerName,
+	a.company_name as companyName,
+	SUM(a.weight) AS weight,
+	sum(a.owner_amount) AS ownerAmount,
+	max(a.end_time) AS endTime,
+	min(a.create_time) AS createTime
+  FROM
+	ml_order a
+  WHERE
+	PERIOD_DIFF(
+		date_format(now(), '%Y%m'),
+		date_format(end_time, '%Y%m')
+	) = 1
+AND a. STATUS = 6
+AND a.settle_type = 2
+AND a.charge_status != 1
+GROUP BY
+	owner_id
+</select>
+
+    <!-- 运费月结 lianrongxiang 20190104 cms1.6.0-->
+    <select id="getFreightSettleDetail" resultMap="OrderExtendsMap">
+        SELECT
+        a.order_id,
+        d.maker_name,
+        d.id as maker_id,
+        d.maker_mobile,
+        d.link_man,
+        a.carrier_amount,
+        a.start_name,
+        a.arrive_name,
+        a.status,
+        a.weight
+        FROM ml_order a
+        INNER JOIN cms_order_price b ON b.order_id=a.order_id
+        INNER JOIN cms_price_maker d on d.id=b.maker_id
+        INNER  JOIN cms_order_flow c ON c.maker_id=d.id and c.order_id=a.order_id
+        WHERE  a.STATUS  in (4,5,6)
+        AND a.settle_freight_type = 2
+        AND a.is_test=0
+         and a.pay_status not in (2,3,4)
+        and a.confirm_time &gt;= #{startTime}
+        AND a.confirm_time &lt;=  #{endTime}
+        AND a.order_id not in (SELECT order_id from cms_settle_bill_order where settle_bill_type=3)
+    </select>
+    <!--运费票结-->
+<select id="getOwnerSettleDetail" resultMap="OrderExtendsMap">
+SELECT
+a.order_id,
+a.owner_id,
+a.owner_amount,
+a.end_time,
+a.create_time,
+a.recash_type,
+a.owner_name,
+a.company_name,
+a.start_name,
+a.arrive_name,
+a.status,
+a.weight
+FROM ml_order a
+WHERE  a. STATUS = 6
+AND a.settle_type = 2
+AND a.charge_status != 1
+AND a.is_test=0
+AND a.settle_freight_type=1
+  and a.end_time &gt;=  #{startTime}
+  AND a.end_time &lt;=  #{endTime}
+</select>
+    <!-- 查询外部并且返现、已完成、未删除的订单 -->
+    <select id="getReturnForeign" resultMap="OrderExtendsMap">
+        SELECT
+        <include refid="AllColumn"/>
+        FROM ml_order
+        WHERE recash_type = 2
+        AND status = 6
+        AND is_deleted = 0
+        AND is_invalid = 0
+        AND end_time >= #{startTime}
+        AND end_time <![CDATA[<=]]> #{endTime}
+        AND is_test = 0
+        <if test="group == 1">
+            GROUP BY owner_id
+        </if>
+
+    </select>
+
+    <select id="updateChargeStatus">
+       update ml_order t set t.charge_status = #{chargeStatus} where t.order_id in (#{orderIdsStr})
+  </select>
+
+    <update id="updateChargeStatusBatch">
+        update ml_order t set t.charge_status = 1 where t.order_id in
+        <foreach collection="list" item="item" open="(" close=")" separator=",">
+            #{item.orderId}
+        </foreach>
+    </update>
+    <select id="getSumAndCount" resultType="com.malicn.server.domain.order.Order">
+    select COUNT(order_id) as countOrder, sum(weight) as sumWeight, sum(total_amount) as sumAmount
+    from ml_order
+    WHERE recash_type = 2
+    AND status = 6
+    AND is_deleted = 0
+    AND is_test = 0
+    AND is_invalid = 0
+    AND owner_id = #{userId}
+    AND end_time >= #{startTime}
+    AND end_time <![CDATA[<=]]> #{endTime}
+  </select>
+    <!--确认收款订单相关状态变化-->
+    <update id="updateBySureRec">
+        UPDATE ml_order
+        SET status = #{status},
+        discount_amount = #{discountAmount},
+        owner_amount = #{ownerAmount}
+        <!--全部使用预付款-核销-->
+        <if test="chargeStatus!=null and chargeStatus!=''">
+            ,charge_status = 1
+        </if>
+        WHERE order_id = #{orderId}
+    </update>
+
+    <update id="updateDepositeId">
+    UPDATE ml_order t
+    set  t.deposite_detail_id = #{depositeDetailId}
+    WHERE order_id = #{orderId}
+  </update>
+
+
+    <!--变更状态为已完成 -->
+    <update id="updatePayStatusByList">
+        UPDATE ml_order t
+        SET pay_status = 2
+        WHERE order_id in
+        <foreach collection="list" item="item" open="(" close=")" separator=",">
+            #{item.orderId}
+        </foreach>
+    </update>
+    <update id="updatePayStatusByListFKZ">
+        UPDATE ml_order t
+        SET pay_status = 3
+        WHERE order_id in
+        <foreach collection="list" item="item" open="(" close=")" separator=",">
+            #{item.orderId}
+        </foreach>
+    </update>
+    <update id="updateOrderChange" parameterType="java.lang.Long">
+    update ml_order set charge_status = 1 where order_id = #{orderId}
+  </update>
+
+    <!--@author qun.xu @desc 锁单列表 @version CMS 1.3.10-->
+    <select id="listByLock" resultMap="OrderExtendsMap">
+        SELECT
+        t.owner_id, t.order_id, t.create_time, t.start_name, t.arrive_name, t.weight, t.cargo_ctgry_name, t.start_id,
+        t.arrive_id,
+        t.update_time,
+        case when owner.personal_auth_status = 1 then owner.real_name
+        when owner.personal_auth_status = 0 then t.owner_name
+        end as owner_name,
+        case when owner.company_auth_status = 1 then owner.company_name
+        when owner.company_auth_status = 0 then t.company_name
+        end as company_name,
+        base.mobile as mobile,
+        flow.updator AS updator,
+        t.is_test
+        FROM ml_order t
+        left JOIN cms_order_flow flow
+        ON flow.order_id = t.order_id
+        left JOIN ml_user_base base
+        ON base.user_id = t.owner_id
+        left join ml_user_owner owner
+        on t.owner_id = owner.user_id
+        WHERE t.status = 0
+        AND t.is_deleted = 0
+        AND order_from != 2 <!-- 过滤外来订单 app 端在确认订单时 更改来源，修改订单状态， 但是Excel导入时  默认是2 状态 0 -->
+        <if test="ownerMobile != null and ownerMobile != ''">
+            AND (LOCATE(#{ownerMobile},base.mobile) > 0)
+        </if>
+        <if test="orderId != null and orderId != ''">
+            AND (LOCATE(#{orderId}, t.order_id) > 0)
+        </if>
+        AND flow.flow_status = 1
+        ORDER by t.update_time DESC
+    </select>
+
+    <insert id="saveExcelOrder" parameterType="com.malicn.server.domain.order.Order">
+    INSERT INTO ml_order (
+    order_id,owner_id,owner_name,company_name,status,
+    start_id,start_name,arrive_id,arrive_name,weight,
+    cargo_ctgry_id,cargo_ctgry_name,
+    order_from,recash_type,settle_type,charge_status,is_first,
+    create_time,update_time,order_type
+    )
+    VALUES (
+    #{orderId},#{ownerId},#{ownerName},#{companyName},0,
+    #{startId},#{startName},#{arriveId},#{arriveName},#{weight},
+    #{cargoCtgryId},#{cargoCtgryName},
+    #{orderFrom},#{recashType},#{settleType},#{chargeStatus},#{isFirst},
+    now(),now(),#{orderType}
+    )
+  </insert>
+
+
+    <select id="selectOrderByStatusAndOrderId" resultMap="OrderExtendsMap">
+        SELECT
+        a.order_id,
+        a.STATUS,
+        a.start_name,
+        a.arrive_name,
+        a.owner_name,
+        a.company_name,
+        c.mobile,
+        a.driver_name,
+        a.driver_mobile,
+        a.plate_no,
+        a.start_address,
+        a.arrive_address,
+        a.recash_type,
+        a.settle_type,
+        a.charge_status,
+        a.weight,
+        a.order_from,
+        a.total_amount,
+        a.owner_amount,
+        a.create_time
+        FROM ml_order a
+        INNER JOIN ml_user_base c ON c.user_id =a.owner_id
+        where 1=1
+        <if test="status !=null ">
+            and a.status= #{status}
+        </if>
+        <if test="orderIdString !=null and orderIdString!=''">
+            and a.order_id like concat('%',#{orderIdString},'%')
+        </if>
+        order by a.create_time desc
+        LIMIT 50
+    </select>
+
+
+    <update id="updateOrderType">
+        UPDATE ml_order SET
+        order_type=#{orderType},
+        update_time=now(),
+        recash_type=#{recashType},
+        order_from=#{orderFrom}
+        <if test="arriveStrgId !=null and arriveStrgId !=''">
+           , arrive_strg_id=#{arriveStrgId}
+        </if>
+        <if test="arriveStrgName !=null and arriveStrgName !=''">
+            ,arrive_strg_name=#{arriveStrgName}
+        </if>
+        <if test="arriveAddress !=null and arriveAddress !=''">
+            ,arrive_address=#{arriveAddress}
+        </if>
+        <if test="settleFreightType !=null and settleFreightType !=''">
+            ,settle_freight_type=#{settleFreightType}
+        </if>
+        where
+        order_id=#{orderId}
+    </update>
+
+    <select id="getOrderRegret" resultMap="OrderMap">
+        SELECT <include refid="AllColumn" /> FROM ml_order
+        WHERE    is_deleted=0 and is_test=0
+        <if test="wd !=null and wd !=''">
+        and  order_id LIKE concat('%',#{wd},'%')
+           </if>
+        LIMIT 50
+    </select>
+
+</mapper>

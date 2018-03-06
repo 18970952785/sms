@@ -1,0 +1,147 @@
+<?xml version="1.0" encoding="UTF-8" ?>
+<!DOCTYPE mapper PUBLIC "-//mybatis.org//DTD Mapper 3.0//EN" "http://mybatis.org/dtd/mybatis-3-mapper.dtd" >
+<mapper namespace="com.malicn.server.dao.vehicle.VehlRouteDao" >
+  <resultMap id="BaseResultMap" type="com.malicn.server.domain.vehicle.VehlRoute" >
+    <id column="id" property="id" jdbcType="BIGINT" />
+    <result column="vehicle_id" property="vehicleId" jdbcType="BIGINT" />
+    <result column="route_id" property="routeId" jdbcType="INTEGER" />
+    <result column="start_id" property="startId" jdbcType="INTEGER" />
+    <result column="start_name" property="startName" jdbcType="VARCHAR" />
+    <result column="arrive_id" property="arriveId" jdbcType="INTEGER" />
+    <result column="arrive_name" property="arriveName" jdbcType="VARCHAR" />
+    <result column="unit_price" property="unitPrice" jdbcType="DECIMAL" />
+    <result column="create_time" property="createTime" jdbcType="TIMESTAMP" />
+    <result column="update_time" property="updateTime" jdbcType="TIMESTAMP" />
+  </resultMap>
+  <sql id="Base_Column_List" >
+    id, vehicle_id, route_id, start_id, start_name, arrive_id, arrive_name, unit_price, 
+    create_time, update_time
+  </sql>
+  <select id="selectByPrimaryKey" resultMap="BaseResultMap" parameterType="java.lang.Long" >
+    select 
+    <include refid="Base_Column_List" />
+    from ml_vehl_route
+    where id = #{id,jdbcType=BIGINT}
+  </select>
+  <delete id="deleteByPrimaryKey" parameterType="java.lang.Long" >
+    delete from ml_vehl_route
+    where id = #{id,jdbcType=BIGINT}
+  </delete>
+  <insert id="insert" useGeneratedKeys="true" keyProperty="id"
+          parameterType="com.malicn.server.domain.vehicle.VehlRoute" >
+    insert into ml_vehl_route (id, vehicle_id, route_id, 
+      start_id, start_name, arrive_id, 
+      arrive_name, unit_price, create_time, 
+      update_time)
+    values (#{id,jdbcType=BIGINT}, #{vehicleId,jdbcType=BIGINT}, #{routeId,jdbcType=INTEGER}, 
+      #{startId,jdbcType=INTEGER}, #{startName,jdbcType=VARCHAR}, #{arriveId,jdbcType=INTEGER}, 
+      #{arriveName,jdbcType=VARCHAR}, #{unitPrice,jdbcType=DECIMAL}, #{createTime,jdbcType=TIMESTAMP}, 
+      #{updateTime,jdbcType=TIMESTAMP})
+  </insert>
+  <insert id="insertSelective"  useGeneratedKeys="true" keyProperty="id"
+          parameterType="com.malicn.server.domain.vehicle.VehlRoute" >
+    insert into ml_vehl_route
+    <trim prefix="(" suffix=")" suffixOverrides="," >
+      <if test="id != null" >
+        id,
+      </if>
+      <if test="vehicleId != null" >
+        vehicle_id,
+      </if>
+      <if test="routeId != null" >
+        route_id,
+      </if>
+      <if test="startId != null" >
+        start_id,
+      </if>
+      <if test="startName != null" >
+        start_name,
+      </if>
+      <if test="arriveId != null" >
+        arrive_id,
+      </if>
+      <if test="arriveName != null" >
+        arrive_name,
+      </if>
+      <if test="unitPrice != null" >
+        unit_price,
+      </if>
+        create_time
+    </trim>
+    <trim prefix="values (" suffix=")" suffixOverrides="," >
+      <if test="id != null" >
+        #{id,jdbcType=BIGINT},
+      </if>
+      <if test="vehicleId != null" >
+        #{vehicleId,jdbcType=BIGINT},
+      </if>
+      <if test="routeId != null" >
+        #{routeId,jdbcType=INTEGER},
+      </if>
+      <if test="startId != null" >
+        #{startId,jdbcType=INTEGER},
+      </if>
+      <if test="startName != null" >
+        #{startName,jdbcType=VARCHAR},
+      </if>
+      <if test="arriveId != null" >
+        #{arriveId,jdbcType=INTEGER},
+      </if>
+      <if test="arriveName != null" >
+        #{arriveName,jdbcType=VARCHAR},
+      </if>
+      <if test="unitPrice != null" >
+        #{unitPrice,jdbcType=DECIMAL},
+      </if>
+      #{createTime,jdbcType=TIMESTAMP}
+    </trim>
+  </insert>
+  <update id="updateByPrimaryKeySelective" parameterType="com.malicn.server.domain.vehicle.VehlRoute" >
+    update ml_vehl_route
+    <set >
+      <if test="vehicleId != null" >
+        vehicle_id = #{vehicleId,jdbcType=BIGINT},
+      </if>
+      <if test="routeId != null" >
+        route_id = #{routeId,jdbcType=INTEGER},
+      </if>
+      <if test="startId != null" >
+        start_id = #{startId,jdbcType=INTEGER},
+      </if>
+      <if test="startName != null" >
+        start_name = #{startName,jdbcType=VARCHAR},
+      </if>
+      <if test="arriveId != null" >
+        arrive_id = #{arriveId,jdbcType=INTEGER},
+      </if>
+      <if test="arriveName != null" >
+        arrive_name = #{arriveName,jdbcType=VARCHAR},
+      </if>
+      <if test="unitPrice != null" >
+        unit_price = #{unitPrice,jdbcType=DECIMAL},
+      </if>
+    </set>
+    where id = #{id,jdbcType=BIGINT}
+  </update>
+  <update id="updateByPrimaryKey" parameterType="com.malicn.server.domain.vehicle.VehlRoute" >
+    update ml_vehl_route
+    set vehicle_id = #{vehicleId,jdbcType=BIGINT},
+      route_id = #{routeId,jdbcType=INTEGER},
+      start_id = #{startId,jdbcType=INTEGER},
+      start_name = #{startName,jdbcType=VARCHAR},
+      arrive_id = #{arriveId,jdbcType=INTEGER},
+      arrive_name = #{arriveName,jdbcType=VARCHAR},
+      unit_price = #{unitPrice,jdbcType=DECIMAL},
+      create_time = #{createTime,jdbcType=TIMESTAMP},
+      update_time = #{updateTime,jdbcType=TIMESTAMP}
+    where id = #{id,jdbcType=BIGINT}
+  </update>
+  <select id="getByVidAndStaIdAndArrId" resultMap="BaseResultMap">
+    select
+    <include refid="Base_Column_List" />
+    from ml_vehl_route
+    where vehicle_id = #{vid,jdbcType=BIGINT}
+    AND  start_id = #{sid,jdbcType=INTEGER}
+    AND  arrive_id = #{aid,jdbcType=INTEGER}
+  </select>
+</mapper>

@@ -1,0 +1,136 @@
+<?xml version="1.0" encoding="UTF-8" ?>
+<!DOCTYPE mapper PUBLIC "-//mybatis.org//DTD Mapper 3.0//EN" "http://mybatis.org/dtd/mybatis-3-mapper.dtd" >
+<mapper namespace="com.malicn.server.dao.drivermatch.DriverMatchDao" >
+  <resultMap id="DriverMatchMap" type="com.malicn.server.domain.drivermatch.DriverMatch" >
+    <id column="id" property="id" jdbcType="INTEGER" />
+    <result column="order_id" property="orderId" jdbcType="BIGINT" />
+    <result column="user_name" property="userName" jdbcType="VARCHAR" />
+    <result column="user_mobile" property="userMobile" jdbcType="VARCHAR" />
+    <result column="carrier_id" property="carrierId" jdbcType="BIGINT" />
+    <result column="carrier_mobile" property="carrierMobile" jdbcType="VARCHAR" />
+    <result column="carrier_name" property="carrierName" jdbcType="VARCHAR" />
+    <result column="driver_id" property="driverId" jdbcType="BIGINT" />
+    <result column="driver_mobile" property="driverMobile" jdbcType="VARCHAR" />
+    <result column="driver_name" property="driverName" jdbcType="VARCHAR" />
+    <result column="pltate_no" property="pltateNo" jdbcType="VARCHAR" />
+    <result column="vehicle_id" property="vehicleId" jdbcType="BIGINT" />
+    <result column="vhcle_type" property="vhcleType" jdbcType="TINYINT" />
+    <result column="length" property="length" jdbcType="DECIMAL" />
+    <result column="min_tmp" property="minTmp" jdbcType="DECIMAL" />
+    <result column="start_id" property="startId" jdbcType="INTEGER" />
+    <result column="start_name" property="startName" jdbcType="VARCHAR" />
+    <result column="arrive_id" property="arriveId" jdbcType="INTEGER" />
+    <result column="arrive_name" property="arriveName" jdbcType="VARCHAR" />
+    <result column="rated_wght" property="ratedWght" jdbcType="DECIMAL" />
+    <result column="result" property="result" jdbcType="VARCHAR" />
+    <result column="comment" property="comment" jdbcType="VARCHAR" />
+    <result column="owner_frght" property="ownerFrght" jdbcType="DECIMAL" />
+    <result column="total_owner_price" property="totalOwnerPrice" jdbcType="DECIMAL" />
+    <result column="carri_frght" property="carriFrght" jdbcType="DECIMAL" />
+    <result column="total_carri_price" property="totalCarriPrice" jdbcType="DECIMAL" />
+    <result column="arrival_date" property="arrivalDate" jdbcType="DATE" />
+    <result column="creator" property="creator" jdbcType="VARCHAR" />
+    <result column="create_time" property="createTime" jdbcType="TIMESTAMP" />
+    <result column="updater" property="updater" jdbcType="VARCHAR" />
+    <result column="update_time" property="updateTime" jdbcType="TIMESTAMP" />
+    <result column="is_lock" property="isLock" jdbcType="TINYINT" />
+    <result column="is_delete" property="isDelete" jdbcType="TINYINT" />
+  </resultMap>
+
+
+  <insert id="saveDriverMatch" parameterType="com.malicn.server.domain.drivermatch.DriverMatch" >
+    insert into cms_driver_match (
+      order_id,
+      user_name,
+      user_mobile,
+      carrier_id,
+      carrier_mobile,
+      carrier_name,
+      driver_id,
+      driver_mobile,
+      driver_name,
+      pltate_no,
+      vehicle_id,
+      vhcle_type,
+      length,
+      min_tmp,
+      start_id,
+      start_name,
+      arrive_id,
+      arrive_name,
+      rated_wght,
+      result,
+      comment,
+      owner_frght,
+      total_owner_price,
+      carri_frght,
+      total_carri_price,
+      arrival_date,
+      creator,
+      create_time,
+      updater,
+      update_time,
+      is_lock,
+      is_delete,
+      log_com_name,
+      log_com_contact,
+      log_com_con_tel
+      )
+    values (
+      #{orderId},
+      #{userName},
+      #{userMobile},
+      #{carrierId},
+      #{carrierMobile},
+      #{carrierName},
+      #{driverId},
+      #{driverMobile},
+      #{driverName},
+      #{pltateNo},
+      #{vehicleId},
+      #{vhcleType},
+      #{length},
+      #{minTmp},
+      #{startId},
+      #{startName},
+      #{arriveId},
+      #{arriveName},
+      #{ratedWght},
+      #{result},
+      #{comment},
+      #{ownerFrght},
+      #{totalOwnerPrice},
+      #{carriFrght},
+      #{totalCarriPrice},
+      #{arrivalDate},
+      #{creator},
+      now(),
+      #{updater},
+      now(),
+      1,
+      1,
+      #{logComName},
+      #{logComContact},
+      #{logComConTel}
+      )
+  </insert>
+  <delete id="deleteByOrderId" parameterType="java.lang.Long">
+    DELETE FROM cms_driver_match WHERE order_id = #{orderId}
+  </delete>
+
+
+  <select id="getByOrderId" resultMap="DriverMatchMap">
+    select
+      t.order_id,
+      t.user_name,
+      t.user_mobile
+    from cms_driver_match t
+    where t.order_id = #{orderId}
+      and  t.result = '匹配成功'
+      and  t.is_lock = '1'
+      and  t.is_delete = '1'
+    limit 1
+  </select>
+
+
+</mapper>

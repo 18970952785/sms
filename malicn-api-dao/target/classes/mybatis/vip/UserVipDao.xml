@@ -1,0 +1,100 @@
+<?xml version="1.0" encoding="UTF-8" ?>
+<!DOCTYPE mapper PUBLIC "-//mybatis.org//DTD Mapper 3.0//EN" "http://mybatis.org/dtd/mybatis-3-mapper.dtd" >
+<mapper namespace="com.malicn.server.dao.vip.UserVipDao" >
+  <resultMap id="UserVipMap" type="com.malicn.server.domain.vip.UserVip" >
+    <id column="id" property="id" jdbcType="BIGINT" />
+    <result column="user_id" property="userId" jdbcType="BIGINT" />
+    <result column="vip_name" property="vipName" jdbcType="VARCHAR" />
+    <result column="status" property="status" jdbcType="TINYINT" />
+    <result column="expired_time" property="expiredTime" jdbcType="TIMESTAMP" />
+    <result column="coupon_num" property="couponNum" />
+    <result column="create_time" property="createTime" jdbcType="TIMESTAMP" />
+    <result column="update_time" property="updateTime" jdbcType="TIMESTAMP" />
+  </resultMap>
+
+  <sql id="all_column" >
+    id, user_id, vip_name, status, expired_time, coupon_num, create_time, update_time
+  </sql>
+
+  <insert id="saveUserVip" parameterType="com.malicn.server.domain.vip.UserVip" useGeneratedKeys="true" keyProperty="id">
+    INSERT INTO ml_user_vip (user_id, vip_name, status, expired_time, create_time)
+    VALUES (#{userId}, #{vipName}, #{status}, #{expiredTime}, #{createTime})
+  </insert>
+
+  <update id="updateUserVip" parameterType="com.malicn.server.domain.vip.UserVip">
+    UPDATE ml_user_vip
+    SET
+    <if test="user_id != null">
+      user_id = #{userId},
+    </if>
+    <if test="vip_name != null">
+      vip_name = #{vipName},
+    </if>
+    <if test="status != null">
+      status = #{status},
+    </if>
+    <if test="expired_time != null">
+      expired_time = #{expiredTime},
+    </if>
+    <if test="create_time != null">
+      create_time = #{createTime},
+    </if>
+    WHERE id = #{id}
+  </update>
+
+  <select id="getUserVip" resultMap="UserVipMap">
+    SELECT <include refid="all_column" />
+    FROM ml_user_vip
+    WHERE id = #{vipId}
+  </select>
+
+  <select id="getUserVipByName" resultMap="UserVipMap">
+    SELECT <include refid="all_column" />
+    FROM ml_user_vip
+    WHERE user_id = #{userId}
+    AND vip_name = #{vipName}
+    AND status = 1
+  </select>
+
+
+
+  <select id="getUserVips" resultMap="UserVipMap" parameterType="com.malicn.server.domain.vip.UserVip">
+    SELECT <include refid="all_column" />
+    FROM ml_user_vip
+    WHERE 1=1
+    and user_id =#{userId}
+  </select>
+
+  <select id="getLastUserVip" resultMap="UserVipMap" parameterType="com.malicn.server.domain.vip.UserVip">
+    SELECT <include refid="all_column" />
+    FROM ml_user_vip t
+    WHERE 1=1
+    and user_id =#{userId}
+    order by t.create_time desc
+    limit 1
+  </select>
+
+
+  <!-- 更新会员状态 -->
+  <update id="expiredVip">
+      UPDATE ml_user_vip SET status=2  WHERE status=1 and expired_time  &lt; #{now}
+  </update>
+
+  <!-- 查询所有在有效期的冷运管家用户 -->
+  <select id="listUserVipsByStatus" resultMap="UserVipMap">
+      SELECT <include refid="all_column" />
+      FROM ml_user_vip
+      WHERE status = 1
+      AND vip_name = #{vipName}
+      AND coupon_num &lt; 6
+    <!--and id > 2074 火云要求更新 在业务层处理-->
+  </select>
+
+  <!-- 更新抵用券发送次数 -->
+  <update id="updateCouponNum" parameterType="java.lang.Long">
+    UPDATE ml_user_vip
+    SET coupon_num = coupon_num + 1
+    WHERE id=#{vipId}
+  </update>
+
+</mapper>

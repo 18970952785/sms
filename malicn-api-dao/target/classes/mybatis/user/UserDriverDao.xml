@@ -1,0 +1,270 @@
+<?xml version="1.0" encoding="UTF-8" ?>
+<!DOCTYPE mapper PUBLIC "-//mybatis.org//DTD Mapper 3.0//EN" "http://mybatis.org/dtd/mybatis-3-mapper.dtd">
+<mapper namespace="com.malicn.server.dao.user.UserDriverDao" >
+
+	<resultMap id="userDriverMap" type="com.malicn.server.domain.user.UserDriver" extends="com.malicn.server.dao.user.UserBaseDao.UserBaseMap">
+		<id column="user_id" property="userId" />
+		<result column="head_img" property="headImg" />
+		<result column="real_name" property="realName" />
+		<result column="driver_type" property="driverType" />
+		<result column="auth_status" property="authStatus" />
+		<result column="driver_status" property="driverStatus" />
+		<result column="license_no" property="licenseNo" />
+		<result column="licn_exp_date" property="licnExpDate" />
+		<result column="licn_img" property="licnImg" />
+		<result column="create_time" property="createTime" />
+		<result column="update_time" property="updateTime" />
+		<result column="auth_pass_time" property="authPassTime" />
+		<result column="is_deleted" property="isDeleted" />
+	</resultMap>
+
+	<sql id="all_columns">
+		user_id,head_img,real_name, driver_type,auth_status, driver_status, license_no, licn_exp_date, licn_img,
+		create_time, update_time, auth_pass_time,is_deleted
+	</sql>
+
+	<sql id="left_all_columns">
+		a.user_id, a.head_img, a.real_name, a.driver_type, a.auth_status,
+		a.driver_status, a.license_no, a.licn_exp_date, a.licn_img,
+		a.create_time, a.update_time, a.auth_pass_time, a.is_deleted
+	</sql>
+	<!-- 新增操作 -->
+	<insert id="saveUserDriver" parameterType="com.malicn.server.domain.user.UserDriver">
+		INSERT INTO ml_user_driver
+		(user_id,head_img,real_name,auth_status,driver_status,license_no,licn_exp_date,licn_img,create_time,update_time,auth_pass_time,is_deleted)
+		VALUES
+		(#{userId},#{headImg},#{realName},#{authStatus},#{driverStatus},#{licenseNo},#{licnExpDate},#{licnImg},now(),now(),#{authPassTime},0)
+	</insert>
+
+	<insert id="insertSelective" parameterType="com.malicn.server.domain.user.UserDriver"  useGeneratedKeys="true"  keyProperty="userId">
+		insert into ml_user_driver
+		<trim prefix="(" suffix=")" suffixOverrides="," >
+			<if test="userId != null" >
+				user_id,
+			</if>
+			<if test="headImg != null" >
+				head_img,
+			</if>
+			<if test="realName != null" >
+				real_name,
+			</if>
+			<if test="driverType != null" >
+				driver_type,
+			</if>
+			<if test="authStatus != null" >
+				auth_status,
+			</if>
+			<if test="driverStatus != null" >
+				driver_status,
+			</if>
+			<if test="licenseNo != null" >
+				license_no,
+			</if>
+			<if test="licnExpDate != null" >
+				licn_exp_date,
+			</if>
+			<if test="licnImg != null" >
+				licn_img,
+			</if>
+			<if test="authPassTime != null" >
+				auth_pass_time,
+			</if>
+			<if test="isDeleted != null" >
+				is_deleted,
+			</if>
+			create_time
+		</trim>
+		<trim prefix="values (" suffix=")" suffixOverrides="," >
+			<if test="userId != null" >
+				#{userId,jdbcType=BIGINT},
+			</if>
+			<if test="headImg != null" >
+				#{headImg,jdbcType=VARCHAR},
+			</if>
+			<if test="realName != null" >
+				#{realName,jdbcType=VARCHAR},
+			</if>
+			<if test="driverType != null" >
+				#{driverType,jdbcType=TINYINT},
+			</if>
+			<if test="authStatus != null" >
+				#{authStatus,jdbcType=TINYINT},
+			</if>
+			<if test="driverStatus != null" >
+				#{driverStatus,jdbcType=TINYINT},
+			</if>
+			<if test="licenseNo != null" >
+				#{licenseNo,jdbcType=VARCHAR},
+			</if>
+			<if test="licnExpDate != null" >
+				#{licnExpDate,jdbcType=DATE},
+			</if>
+			<if test="licnImg != null" >
+				#{licnImg,jdbcType=VARCHAR},
+			</if>
+			<if test="authPassTime != null" >
+				#{authPassTime,jdbcType=TIMESTAMP},
+			</if>
+			<if test="isDeleted != null" >
+				#{isDeleted,jdbcType=TINYINT},
+			</if>
+			<choose>
+				<when test="createTime != null">
+					#{createTime,jdbcType=TIMESTAMP}
+				</when>
+				<otherwise>
+					now()
+				</otherwise>
+			</choose>
+		</trim>
+	</insert>
+	
+	<!-- 修改操作 -->
+	<update id="updateUserDriver" parameterType="com.malicn.server.domain.user.UserDriver" >
+		UPDATE ml_user_driver
+		<set>
+			<if test="headImg != null" >
+				head_img = #{headImg,jdbcType=VARCHAR},
+			</if>
+			<if test="realName != null">
+				real_name = #{realName},
+			</if>
+			<if test="authStatus != null">
+				auth_status = #{authStatus},
+			</if>
+			<if test="driverStatus != null">
+				driver_status = #{driverStatus},
+			</if>
+			<if test="licenseNo != null">
+				license_no = #{licenseNo},
+			</if>
+			<if test="licnExpDate != null">
+				licn_exp_date = #{licnExpDate},
+			</if>
+			<if test="licnImg != null">
+				licn_img = #{licnImg},
+			</if>
+			<if test="authPassTime != null">
+				auth_pass_time = #{authPassTime},
+			</if>
+			<if test="isDeleted != null">
+				is_deleted = #{isDeleted},
+			</if>
+		</set>
+		<where>
+			user_id = #{userId}
+		</where>
+	</update>
+	<select id="get" resultMap="userDriverMap" parameterType="java.lang.Long">
+		SELECT <include refid="all_columns"/>
+		FROM ml_user_driver
+		WHERE user_id = #{driverId}
+	</select>
+
+	<select id="getDriverInfo" resultMap="userDriverMap">
+		SELECT ud.user_id, ud.real_name, ud.driver_type, ud.auth_status,
+		ud.driver_status, ud.license_no, ud.licn_exp_date,
+		ud.licn_img, ud.auth_pass_time, ud.head_img,
+		ub.mobile
+		FROM ml_user_driver ud
+		LEFT JOIN ml_user_base ub ON ud.user_id = ub.user_id
+		WHERE ud.user_id = #{driverId}
+	</select>
+	<select id="getDriverTypeById" resultMap="userDriverMap">
+		SELECT <include refid="all_columns" />
+		FROM ml_user_driver
+		WHERE user_id = #{driverId}
+	</select>
+
+	<update id="updateCleanDriverInfo" parameterType="java.lang.Long">
+		UPDATE ml_user_driver
+		SET head_img=NULL, real_name =NULL, auth_status=0, license_no=NULL ,
+		licn_exp_date =NULL, licn_img=NULL, auth_pass_time=NULL
+		where user_id = #{driverId}
+	</update>
+
+	<!-- 更新司机状态 -->
+	<update id="updateDriverStatus">
+		UPDATE ml_user_driver
+		SET driver_status = #{driverStatus}
+		WHERE user_id = #{driverId}
+	</update>
+	<update id="updateAuthStatus">
+		UPDATE ml_user_driver
+		SET auth_status = #{authStatus}
+		WHERE user_id = #{driverId}
+	</update>
+
+	<!--@author qun.xu 推荐朋友列表详细信息-->
+	<select id="getDriverList" resultMap="userDriverMap" parameterType="java.util.List">
+		select
+		o.user_id,o.head_img,o.real_name,b.mobile
+		from ml_user_driver o
+		inner join ml_user_base b
+		on o.user_id = b.user_id
+		where o.user_id in
+		<foreach collection="list" index="index" item="baseQueryDTO" open="(" separator="," close=")">
+			#{baseQueryDTO.userId}
+		</foreach>
+		order by o.update_time desc
+	</select>
+
+	<!-- 根据身份证号码查询是否已被使用 -->
+	<select id="getUserDriverByIdCard" resultMap="userDriverMap" parameterType="java.lang.String">
+		SELECT <include refid="all_columns" />
+		FROM ml_user_driver
+		WHERE auth_status = 1
+		AND license_no = #{idCard}
+		limit 1
+	</select>
+
+	<!--  -->
+	<select id="listDriverInfo" resultMap="userDriverMap">
+		SELECT <include refid="left_all_columns"/>, b.mobile
+		FROM ml_user_driver a
+		LEFT JOIN ml_user_base b
+		ON a.user_id = b.user_id
+		WHERE 1=1
+		<if test="authStatus != null ">
+			AND a.auth_status = #{authStatus}
+		</if>
+		<if test="driverMobile != null and driverMobile != ''">
+			AND (LOCATE(#{driverMobile}, b.mobile) >0)
+		</if>
+		<if test="driverName != null and driverName != ''">
+			AND (LOCATE(#{driverName}, a.real_name) >0)
+		</if>
+		ORDER BY a.update_time DESC
+	</select>
+
+	<!-- 根据条件模糊搜索司机 -->
+	<select id="getByUserDriverInfo" resultMap="userDriverMap">
+		SELECT a.user_id, a.head_img, a.real_name, a.driver_type, a.auth_status,
+		a.driver_status, a.license_no, a.licn_exp_date, a.licn_img,
+		a.create_time, a.update_time, a.auth_pass_time, a.is_deleted,
+		b.mobile
+		FROM ml_user_driver a
+		left join ml_user_base b
+		on a.user_id = b.user_id
+		WHERE   auth_status=1
+		<if test="wd != null and wd != ''">
+			AND ((LOCATE(#{wd}, a.real_name) > 0) or (LOCATE(#{wd}, b.mobile)))
+		</if>
+		order by a.create_time desc
+		limit 50
+
+	</select>
+
+
+	<select id="getUserDriverByList"  resultMap="userDriverMap"  parameterType="java.util.List">
+		select
+		<include refid="all_columns"/>
+		from ml_user_driver
+		where user_id in
+		<foreach item="item" collection="list" open="(" separator="," close=")">
+			#{item.userId}
+		</foreach>
+		and auth_status=1
+	</select>
+
+</mapper>

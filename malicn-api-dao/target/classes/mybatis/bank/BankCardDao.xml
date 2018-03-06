@@ -1,0 +1,285 @@
+<?xml version="1.0" encoding="UTF-8" ?>
+<!DOCTYPE mapper PUBLIC "-//mybatis.org//DTD Mapper 3.0//EN" "http://mybatis.org/dtd/mybatis-3-mapper.dtd" >
+<mapper namespace="com.malicn.server.dao.bank.BankCardDao" >
+  <resultMap id="bankCardMap" type="com.malicn.server.domain.bank.BankCard" >
+    <id column="id" property="id" jdbcType="BIGINT" />
+    <result column="user_id" property="userId" jdbcType="BIGINT"/>
+    <result column="bank_id" property="bankId" jdbcType="BIGINT"/>
+    <result column="account_name" property="accountName" jdbcType="VARCHAR"/>
+    <result column="bank_card_no" property="bankCardNo" jdbcType="VARCHAR" />
+    <result column="create_time" property="createTime" jdbcType="TIMESTAMP" />
+    <result column="update_time" property="updateTime" jdbcType="TIMESTAMP" />
+    <result column="is_deleted" property="isDeleted" jdbcType="TINYINT" />
+    <result column="region_id" property="regionId" jdbcType="INTEGER" />
+    <result column="user_type" property="userType" jdbcType="TINYINT" />
+    <result column="creator_name" property="creatorName" jdbcType="VARCHAR" />
+    <result column="updator_name" property="updatorName" jdbcType="VARCHAR" />
+
+
+
+
+    <result column="name" property="bankName" jdbcType="VARCHAR" />   <!--加入了ml_bank表的name字段-->
+    <result column="code" property="bankCode" jdbcType="VARCHAR" />   <!--加入了ml_bank表的code字段-->
+    <result column="icon" property="bankIcon" jdbcType="VARCHAR" />   <!--加入了ml_bank表的icon字段-->
+    <result column="short_name" property="bankShortName" jdbcType="VARCHAR" />
+    <result column="region_name" property="regionName" />
+    <result column="mobile" property="mobile" jdbcType="VARCHAR" />
+    <result column="otherMobile" property="otherMobile" jdbcType="VARCHAR" />
+
+  </resultMap>
+
+  <sql id="table_name">ml_bank_card</sql>
+  <sql id="all_columns">id,user_id,bank_id,account_name,bank_card_no,create_time,update_time,is_deleted,user_type</sql>
+  <sql id="all_columns_and_name">bank.name,bank.code,bank.short_name,bank.icon,card.id,card.user_id,card.bank_id,card.account_name,card.bank_card_no,card.create_time,card.update_time,card.region_id,card.is_deleted,user_type</sql>
+
+  <!--获取银行卡数量-->
+  <select id="getCountCard" parameterType="long" resultType="integer">
+    SELECT count(id) from ml_bank_card where user_id = #{userId} AND is_deleted = 0
+  </select>
+
+  <!--列举我所有的银行卡-->
+  <select id="listMyBankCardsByUserId" parameterType="long" resultMap="bankCardMap">
+    select <include refid="all_columns_and_name" />
+    from ml_bank_card card
+    LEFT JOIN ml_bank bank ON card.bank_id = bank.id
+    where card.user_id = #{userId} AND card.is_deleted=0 ORDER BY create_time DESC
+  </select>
+
+  <!--通过银行卡id获取银行卡-->
+  <select id="getBankCardByCardId" parameterType="long" resultMap="bankCardMap">
+    select <include refid="all_columns_and_name" />,region.short_name as region_name
+    from ml_bank_card card
+    LEFT JOIN ml_bank bank ON card.bank_id = bank.id
+    LEFT JOIN ml_region region
+    ON card.region_id = region.id
+    where card.id = #{cardId} AND card.is_deleted=0
+  </select>
+
+  <!--创建一张银行卡-->
+  <insert id="createBankCard" parameterType="com.malicn.server.domain.bank.BankCard" useGeneratedKeys="true" keyProperty="id">
+    INSERT INTO ml_bank_card
+    (user_id,bank_id,account_name,bank_card_no,create_time,update_time,is_deleted,region_id)
+    VALUES
+    (#{userId},#{bankId},#{accountName},#{bankCardNo},now(),now(),#{isDeleted},#{regionId})
+  </insert>
+
+  <!--删除多张银行卡-->
+  <update id="deleteMyBankCards">
+    UPDATE ml_bank_card set is_deleted = 1 where id in
+    <foreach item="cardId" collection="cardIds" open="(" separator="," close=")">
+      #{cardId}
+    </foreach>
+    AND user_id = #{userId}
+  </update>
+
+  <!--通过userId和卡号获取银行卡(用来判断该用户是否已经添加该银行卡)-->
+  <select id="getBankCardByUserIdAndCardNo"  resultMap="bankCardMap">
+    SELECT <include refid="all_columns"/> from ml_bank_card WHERE user_id = #{userId} AND bank_card_no = #{cardNo} AND is_deleted=0
+  </select>
+
+  <!-- 获取我最近一次创建的银行卡 -->
+  <select id="getAllNewBankCard" resultMap="bankCardMap">
+    select <include refid="all_columns_and_name" />
+    from ml_bank_card card
+    LEFT JOIN ml_bank bank ON card.bank_id = bank.id
+    where card.user_id = #{userId} AND card.is_deleted=0 ORDER BY create_time DESC limit 1;
+  </select>
+
+  <update id="updateDeleted">
+    UPDATE ml_bank_card SET is_deleted=#{isDeleted},update_time=now(),updator_name=#{updatorName} WHERE id=#{id}
+  </update>
+
+  <select id="selectAllAccount"  resultMap="bankCardMap">
+    SELECT
+    a.id,
+    c.mobile,
+    a.bank_card_no,
+    a.account_name,
+    a.region_id,
+    a.bank_id,
+    a.user_id,
+    a.user_type,
+    a.mobile as  otherMobile,
+    a.is_deleted
+    FROM
+    ml_bank_card a
+    LEFT JOIN ml_user_base c ON c.user_id = a.user_id
+    LEFT JOIN cms_price_maker d ON d.id = a.user_id
+    where     user_type=#{userType}
+    <if test="mobile !=null and mobile !='' and userType !=3">
+    AND  (c.mobile LIKE CONCAT('%', #{mobile},'%') or a.mobile LIKE CONCAT('%', #{mobile},'%'))
+     </if>
+    <if test="userType ==3">
+    and  d.maker_mobile LIKE CONCAT('%', #{mobile},'%')
+    </if>
+    ORDER BY a.create_time desc
+  </select>
+
+  <select id="getAccountByUserId" resultMap="bankCardMap">
+    SELECT bank.name,bank.short_name,bank.icon,
+    card.id,card.user_id,card.bank_id,card.account_name,
+    card.bank_card_no,card.create_time,card.update_time,
+    card.region_id,card.is_deleted,card.mobile,
+    region.short_name as region_name
+    FROM ml_bank_card card
+    LEFT JOIN ml_bank bank ON card.bank_id = bank.id
+    LEFT JOIN ml_region region ON region.id = card.region_id
+   <!-- LEFT JOIN ml_user_base base on card.user_id = base.user_id -->
+     WHERE 1=1
+    <if test="userId !=null">
+     and  card.user_id = #{userId}
+    </if>
+    AND card.user_type = #{userType}
+    AND card.is_deleted=0
+    <if test="accountId !=null and accountId!=''">
+    AND card.id = #{accountId}
+    </if>
+    <if test="mobile !=null and mobile!=''">
+      and  card.mobile = #{mobile}
+    </if>
+  </select>
+
+<insert id="insertBankCard">
+insert into ml_bank_card ( user_id, user_type,
+        bank_id, account_name,
+      bank_card_no, create_time, update_time,
+       region_id, creator_name,
+      updator_name
+      <if test="mobile !=null and mobile !=''">
+        ,mobile
+      </if>
+      )
+    values ( #{userId,jdbcType=BIGINT}, #{userType,jdbcType=TINYINT},
+        #{bankId,jdbcType=INTEGER}, #{accountName,jdbcType=VARCHAR},
+      #{bankCardNo,jdbcType=VARCHAR}, now(), now(),
+      #{regionId,jdbcType=INTEGER}, #{creatorName,jdbcType=VARCHAR},
+      #{updatorName,jdbcType=VARCHAR}
+      <if test="mobile !=null and mobile !=''">
+        ,#{mobile,jdbcType=VARCHAR}
+     </if>)
+</insert>
+
+
+  <select id="getBankCardById" resultMap="bankCardMap">
+    SELECT  card.id,card.user_id,card.bank_id,card.account_name,card.user_type,
+    card.bank_card_no,card.region_id, c.mobile, card.mobile as otherMobile
+    FROM ml_bank_card card
+    LEFT JOIN ml_user_base c ON c.user_id = card.user_id
+    WHERE card.id = #{Id}
+    AND card.user_type = #{userType}
+    AND card.is_deleted=0
+  </select>
+
+  <!--获取货主账户信息-->
+  <select id="getOwnerBankCardInfo" resultMap="bankCardMap">
+    SELECT
+     card.id, card.user_id,card.bank_id,b.real_name as account_name,card.user_type,
+    card.bank_card_no,card.region_id,
+    c.mobile
+    FROM ml_bank_card card
+      inner JOIN ml_user_owner b on card.user_id = b.user_id
+      inner JOIN ml_user_base c on b.user_id = c.user_id
+      WHERE LOCATE(#{mobile}, c.mobile) > 0
+      AND card.user_type = 1
+    AND card.is_deleted=0
+    group by card.user_id,card.user_type <!--相当于limit 1-->
+    limit 50
+  </select>
+
+  <!--获取司机账户信息-->
+  <select id="getDriverBankCardInfo" resultMap="bankCardMap">
+    SELECT
+    card.id,card.user_id,card.bank_id,b.real_name as account_name,card.user_type,
+    card.bank_card_no,card.region_id,
+    c.mobile
+    FROM ml_bank_card card
+    inner JOIN ml_user_driver b on card.user_id  = b.user_id
+    inner JOIN ml_user_base c on b.user_id = c.user_id
+    WHERE LOCATE(#{mobile}, c.mobile) > 0
+    AND card.user_type = 2
+    AND card.is_deleted=0
+    group by card.user_id,card.user_type <!--相当于limit 1-->
+    limit 50
+  </select>
+
+  <!--获取报价人账户信息-->
+  <select id="getMakerBankCardInfo" resultMap="bankCardMap">
+    SELECT
+      card.id,card.user_id,card.bank_id,b.maker_name as account_name,card.user_type,
+      card.bank_card_no,card.region_id,
+       b.maker_mobile as mobile
+    FROM ml_bank_card card
+    inner  JOIN cms_price_maker b on card.user_id  = b.id
+    WHERE LOCATE(#{mobile}, b.maker_mobile) > 0
+    AND card.user_type =  3
+    AND card.is_deleted=0
+    group by card.user_id,card.user_type <!--相当于limit 1-->
+    limit 50
+  </select>
+
+  <!--获取其他账户信息-->
+  <select id="getOtherAccountInfo" resultMap="bankCardMap">
+    SELECT
+      card.id,card.user_id,card.bank_id,card.user_type,card.account_name,
+      card.bank_card_no,card.region_id, card.mobile
+    FROM ml_bank_card card
+    WHERE LOCATE(#{mobile}, card.mobile) > 0
+    AND card.user_type = 4
+    AND card.is_deleted=0
+    group by card.mobile <!--相当于limit 1-->
+    limit 50
+  </select>
+
+  <select id="getBankCardByUserId" resultMap="bankCardMap">
+      SELECT  <include refid="all_columns" />
+      FROM ml_bank_card card
+      WHERE card.user_id = #{userId}
+       AND card.is_deleted=0
+      and  card.user_type = #{userType}
+    </select>
+
+  <update id="updateBankCard"   >
+    update ml_bank_card
+    <set >
+      <if test="bankId != null" >
+        bank_id = #{bankId,jdbcType=INTEGER},
+      </if>
+      <if test="accountName != null" >
+        account_name = #{accountName,jdbcType=VARCHAR},
+      </if>
+      <if test="bankCardNo != null" >
+        bank_card_no = #{bankCardNo,jdbcType=VARCHAR},
+      </if>
+      update_time = now(),
+      <if test="regionId != null" >
+        region_id = #{regionId,jdbcType=INTEGER},
+      </if>
+      <if test="updatorName != null" >
+        updator_name = #{updatorName,jdbcType=VARCHAR},
+      </if>
+      <if test="mobile != null" >
+        mobile = #{mobile,jdbcType=VARCHAR},
+      </if>
+    </set>
+    where id = #{id,jdbcType=BIGINT}
+  </update>
+
+
+  <select id="getById" resultMap="bankCardMap">
+      select  <include refid="all_columns"/>
+      from ml_bank_card  t
+      where t.id = #{id}
+  </select>
+
+  <select id="getMarkerData" resultMap="bankCardMap">
+    SELECT <include refid="all_columns" /> FROM ml_bank_card WHERE user_id=#{userId}
+    and user_type=#{userType}
+    and bank_card_no=#{cardNo}
+  </select>
+
+  <select id="getOtherCard" resultMap="bankCardMap">
+    SELECT <include refid="all_columns" /> FROM ml_bank_card WHERE mobile=#{mobile} and
+    user_type=#{userType} and bank_card_no=#{cardNo}
+  </select>
+
+</mapper>

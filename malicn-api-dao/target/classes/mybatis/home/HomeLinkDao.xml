@@ -1,0 +1,28 @@
+<?xml version="1.0" encoding="UTF-8" ?>
+<!DOCTYPE mapper PUBLIC "-//mybatis.org//DTD Mapper 3.0//EN" "http://mybatis.org/dtd/mybatis-3-mapper.dtd" >
+<mapper namespace="com.malicn.server.dao.home.HomeLinkDao" >
+  <resultMap id="HomeLinkMap" type="com.malicn.server.domain.sys.HomeLink" >
+    <id column="id" property="id" jdbcType="INTEGER" />
+    <result column="title" property="title" jdbcType="VARCHAR" />
+    <result column="image" property="image" jdbcType="VARCHAR" />
+    <result column="content" property="content" jdbcType="VARCHAR" />
+    <result column="link" property="link" jdbcType="VARCHAR" />
+    <result column="conditions" property="conditions" jdbcType="VARCHAR" />
+    <result column="sort" property="sort" jdbcType="INTEGER" />
+    <result column="client_type" property="clientType" jdbcType="TINYINT" />
+    <result column="create_time" property="createTime" jdbcType="TIMESTAMP" />
+    <result column="update_time" property="updateTime" jdbcType="TIMESTAMP" />
+    <result column="is_deleted" property="isDeleted" jdbcType="TINYINT" />
+  </resultMap>
+
+  <sql id="table_name">ml_home_link</sql>
+  <sql id="all_columns">id,title,image,content,link,conditions,sort,client_type,create_time,update_time,is_deleted</sql>
+
+  <select id="getAll" resultMap="HomeLinkMap">
+    select
+    <include refid="all_columns"/>
+    from
+    <include refid="table_name"/>
+    WHERE is_deleted=0 ORDER BY sort ASC
+  </select>
+</mapper>

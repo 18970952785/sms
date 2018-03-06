@@ -1,0 +1,38 @@
+<?xml version="1.0" encoding="UTF-8" ?>
+<!DOCTYPE mapper PUBLIC "-//mybatis.org//DTD Mapper 3.0//EN" "http://mybatis.org/dtd/mybatis-3-mapper.dtd" >
+<mapper namespace="com.malicn.server.dao.web.YcPartnerDao" >
+  <resultMap id="BaseResultMap" type="com.malicn.server.domain.web.YcPartner" >
+    <id column="id" property="id" jdbcType="INTEGER" />
+    <id column="update_time" property="updateTime" jdbcType="TIMESTAMP" />
+    <result column="name" property="name" jdbcType="VARCHAR" />
+    <result column="mobile" property="mobile" jdbcType="VARCHAR" />
+    <result column="city" property="city" jdbcType="VARCHAR" />
+    <result column="company_name" property="companyName" jdbcType="VARCHAR" />
+    <result column="work_position" property="workPosition" jdbcType="VARCHAR" />
+    <result column="email" property="email" jdbcType="VARCHAR" />
+    <result column="remark" property="remark" jdbcType="VARCHAR" />
+    <result column="client_ip" property="clientIp" jdbcType="VARCHAR" />
+    <result column="create_time" property="createTime" jdbcType="TIMESTAMP" />
+  </resultMap>
+  <sql id="Base_Column_List" >
+    id, update_time, name, mobile, city, company_name, work_position, email, remark, 
+    client_ip, create_time
+  </sql>
+
+  <insert id="insert" parameterType="com.malicn.server.domain.web.YcPartner" >
+    insert into ml_partner_yc (name,
+      mobile, city, company_name, 
+      work_position, email, remark, 
+      client_ip, create_time,update_time)
+    values (#{name,jdbcType=VARCHAR},
+      #{mobile,jdbcType=VARCHAR}, #{city,jdbcType=VARCHAR}, #{companyName,jdbcType=VARCHAR},
+      #{workPosition,jdbcType=VARCHAR}, #{email,jdbcType=VARCHAR}, #{remark,jdbcType=VARCHAR}, 
+      #{clientIp,jdbcType=VARCHAR},now(),now())
+  </insert>
+
+  <select id="selectByAll" resultMap="BaseResultMap">
+    SELECT <include refid="Base_Column_List" /> FROM  ml_partner_yc
+    ORDER  BY  create_time DESC
+  </select>
+
+</mapper>

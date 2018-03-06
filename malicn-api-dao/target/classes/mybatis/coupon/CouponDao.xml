@@ -1,0 +1,264 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<!DOCTYPE mapper PUBLIC "-//mybatis.org//DTD Mapper 3.0//EN" "http://mybatis.org/dtd/mybatis-3-mapper.dtd">
+<mapper namespace="com.malicn.server.dao.coupon.CouponDao">
+    <resultMap id="BaseResultMap" type="com.malicn.server.domain.coupon.Coupon">
+        <id column="id" jdbcType="BIGINT" property="id" />
+        <result column="user_id" jdbcType="BIGINT" property="userId" />
+        <result column="name" jdbcType="VARCHAR" property="name" />
+        <result column="amount" jdbcType="DECIMAL" property="amount" />
+        <result column="expired_time" property="expiredTime" />
+        <result column="status" jdbcType="TINYINT" property="status" />
+        <result column="use_conditions" jdbcType="VARCHAR" property="useConditions" />
+        <result column="order_id" jdbcType="BIGINT" property="orderId" />
+        <result column="create_time" property="createTime" />
+        <result column="update_time" jdbcType="TIMESTAMP" property="updateTime" />
+        <result column="is_deleted" property="isDeleted" jdbcType="TINYINT" />
+    </resultMap>
+
+    <sql id="Base_Column_List">
+        id, user_id, name, amount, expired_time, status, order_id, use_conditions, create_time
+    </sql>
+
+    <!-- 查询我的抵用券券列表 -->
+    <select id="selectByUserId" resultMap="BaseResultMap" parameterType="java.lang.Long">
+        select <include refid="Base_Column_List"/> from ml_coupon where user_id=#{userId} AND is_deleted = 0 ORDER BY status ASC,expired_time ASC
+    </select>
+
+    <!-- 查询我的可用抵用券 -->
+    <select id="listMyUsableCoupon" resultMap="BaseResultMap">
+        SELECT <include refid="Base_Column_List" />
+        FROM ml_coupon
+        WHERE user_id = #{userId} AND status IN(1, 2) and order_id is NULL AND is_deleted = 0
+    </select>
+
+    <!-- 查询抵用券详情 -->
+    <select id="getConponById" parameterType="java.lang.Long" resultMap="BaseResultMap">
+        SELECT <include refid="Base_Column_List" />
+        FROM ml_coupon where id=#{couponId}
+    </select>
+
+    <!-- 将抵用券绑定订单 -->
+    <update id="updateOrderIdById">
+      UPDATE ml_coupon SET
+      order_id=#{orderId},
+      status=2 WHERE id=#{couponId}
+    </update>
+
+    <!-- 过期未使用抵用券 -->
+    <update id="expiredUnUseCoupon">
+        UPDATE ml_coupon SET status=4 WHERE status=1 and expired_time  &lt; #{now}
+    </update>
+
+    <update id="update" parameterType="com.malicn.server.domain.coupon.Coupon">
+        UPDATE ml_coupon
+        SET
+        <if test="userId != null">
+            user_id = #{userId},
+        </if>
+        <if test="name != null">
+            name = #{name},
+        </if>
+        <if test="amount != null">
+            amount = #{amount},
+        </if>
+        <if test="expiredTime != null">
+            expired_time = #{expiredTime},
+        </if>
+        <if test="status != null">
+            status = #{status},
+        </if>
+        <if test="useConditions != null">
+            use_conditions = #{useConditions},
+        </if>
+        <if test="orderId != null">
+            order_id = #{orderId},
+        </if>
+        <if test="isDeleted != null">
+            is_deleted = #{isDeleted},
+        </if>
+        update_time = now()
+        WHERE id = #{id}
+    </update>
+
+    <update id="updateCouponUsed">
+        UPDATE ml_coupon
+        SET status = 3,order_id = #{orderId}
+        WHERE id = #{id}
+    </update>
+
+    <!-- 根据用户id、订单id和抵用券状态获取金额 -->
+    <select id="getCouponByUserIdAndOrderId" resultMap="BaseResultMap">
+        SELECT <include refid="Base_Column_List" />
+        FROM ml_coupon
+        WHERE user_id = #{userId} AND order_id = #{orderId} AND status = #{status} AND is_deleted = 0
+    </select>
+
+    <!-- 根据订单ID查询抵用券金额 -->
+    <select id="getAmountByOrderId" resultMap="BaseResultMap" parameterType="java.lang.Long">
+          SELECT id, amount FROM ml_coupon where order_id=#{orderId} order by create_time LIMIT 1
+    </select>
+
+    <!-- 根据订单ID查询可用的抵用券-->
+    <select id="getCouponByOrderId" resultMap="BaseResultMap" parameterType="java.lang.Long">
+           SELECT id, amount FROM ml_coupon where order_id=#{orderId} AND status IN(1, 2)  AND is_deleted = 0 order by create_time LIMIT 1
+    </select>
+
+    <!--  将老库的抵用券插入新库
+    <insert id="insertSynCoupon" parameterType="com.malicn.server.domain.coupon.Coupon" useGeneratedKeys="true" keyProperty="id">
+      insert into ml_coupon (user_id, name, amount, expired_time, status, use_conditions, order_id, create_time)
+      values (#{userId}, #{name}, #{amount}, #{expiredTime}, #{status}, #{useConditions}, #{orderId}, #{createTime});
+    </insert> -->
+
+    <insert id="insertSynCoupon" parameterType="com.malicn.server.domain.coupon.Coupon" useGeneratedKeys="true" keyProperty="id">
+    insert into ml_coupon
+    <trim prefix="(" suffix=")" suffixOverrides="," >
+        <if test="id != null" >
+            id,
+        </if>
+        <if test="userId != null" >
+            user_id,
+        </if>
+        <if test="name != null" >
+            name,
+        </if>
+        <if test="amount != null" >
+            amount,
+        </if>
+        <if test="expiredTime != null" >
+            expired_time,
+        </if>
+        <if test="status != null" >
+            status,
+        </if>
+        <if test="useConditions != null" >
+            use_conditions,
+        </if>
+        <if test="orderId != null" >
+            order_id,
+        </if>
+        <if test="createTime != null" >
+            create_time,
+        </if>
+        <if test="updateTime != null" >
+            update_time,
+        </if>
+        <if test="isDeleted != null" >
+            is_deleted,
+        </if>
+    </trim>
+    <trim prefix="values (" suffix=")" suffixOverrides="," >
+        <if test="id != null" >
+            #{id,jdbcType=BIGINT},
+        </if>
+        <if test="userId != null" >
+            #{userId,jdbcType=BIGINT},
+        </if>
+        <if test="name != null" >
+            #{name,jdbcType=VARCHAR},
+        </if>
+        <if test="amount != null" >
+            #{amount,jdbcType=DECIMAL},
+        </if>
+        <if test="expiredTime != null" >
+            #{expiredTime,jdbcType=TIMESTAMP},
+        </if>
+        <if test="status != null" >
+            #{status,jdbcType=TINYINT},
+        </if>
+        <if test="useConditions != null" >
+            #{useConditions,jdbcType=VARCHAR},
+        </if>
+        <if test="orderId != null" >
+            #{orderId,jdbcType=BIGINT},
+        </if>
+        <if test="createTime != null" >
+           now(),
+        </if>
+        <if test="updateTime != null" >
+            #{updateTime,jdbcType=TIMESTAMP},
+        </if>
+        <if test="isDeleted != null" >
+            #{isDeleted,jdbcType=TINYINT},
+        </if>
+    </trim>
+    </insert>
+
+    <insert id="insert" parameterType="com.malicn.server.domain.coupon.Coupon" >
+        insert into ml_coupon(
+                user_id,
+                name,
+                amount,
+                expired_time,
+                status,
+                use_conditions,
+                order_id,
+                create_time
+        )values(
+            #{userId},
+            #{name},
+            #{amount},
+            #{expiredTime},
+            #{status},
+            #{useConditions},
+            #{orderId},
+            now()
+        )
+    </insert>
+
+
+
+
+    <!-- 老库有跟新的插入新库 -->
+    <update id="updateSynCoupon" parameterType="com.malicn.server.domain.coupon.Coupon">
+      UPDATE ml_coupon
+      SET
+      user_id = #{userId},
+      name = #{name},
+      amount = #{amount},
+      expired_time = #{expiredTime},
+      status = #{status},
+      order_id = #{orderId},
+      update_time = now(),
+      WHERE
+      id = #{id}
+      </update>
+
+    <!-- 每个月一号给已开通冷运管家的货主发送抵用券 -->
+    <insert id="insertCouponByOwnerVip">
+        INSERT INTO ml_coupon (user_id, name, amount, expired_time, status, use_conditions, create_time)
+        VALUES
+        <foreach collection="list" index="index" item="userVips" separator=",">
+            (#{userVips.userId}, #{coupon.name}, #{coupon.amount}, #{coupon.expiredTime},
+            #{coupon.status}, #{coupon.useConditions}, #{coupon.createTime} )
+        </foreach>
+    </insert>
+
+
+
+    <!--CMS 1.3.0 抵用券-->
+    <!-- 查询我的抵用券列表 -->
+    <select id="getListByOwnerList" resultMap="BaseResultMap">
+        select <include refid="Base_Column_List"/> from ml_coupon t
+        where  t.user_id in
+        <foreach collection="list" item="ownerId" open="(" close=")" separator=",">
+            #{ownerId}
+        </foreach>
+           and t.status = 1  and t.order_id is null
+    </select>
+
+
+    <!--CMS 1.3.0 抵用券-->
+    <!-- 查询我的抵用券列表 -->
+    <select id="getListByOrderList" resultMap="BaseResultMap">
+        select <include refid="Base_Column_List"/> from ml_coupon t
+        where  t.order_id in
+        <foreach collection="list" item="ownerId" open="(" close=")" separator=",">
+            #{orderId}
+        </foreach>
+        and t.status = 3  and t.order_id is not null
+    </select>
+
+
+
+
+</mapper>

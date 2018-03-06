@@ -1,0 +1,65 @@
+<?xml version="1.0" encoding="UTF-8" ?>
+<!DOCTYPE mapper PUBLIC "-//mybatis.org//DTD Mapper 3.0//EN" "http://mybatis.org/dtd/mybatis-3-mapper.dtd" >
+<mapper namespace="com.malicn.server.dao.vip.VipRelationDao" >
+
+  <resultMap id="VipRelationMapper" type="com.malicn.server.domain.vip.VipRelation" >
+    <id column="id" property="id" jdbcType="BIGINT" />
+    <result column="user_id" property="userId" jdbcType="BIGINT" />
+    <result column="user_vip_id" property="userVipId" jdbcType="BIGINT" />
+    <result column="referee_id" property="refereeId" jdbcType="BIGINT" />
+    <result column="referee_vip_id" property="refereeVipId" jdbcType="BIGINT"  />
+    <result column="create_time" property="createTime" jdbcType="TIMESTAMP" />
+    <result column="update_time" property="updateTime" jdbcType="TIMESTAMP" />
+  </resultMap>
+
+  <sql id="all_column" >
+    id, user_id, user_vip_id, referee_id, referee_vip_id, create_time, update_time
+  </sql>
+
+  <select id="getRelationsByVipId" resultMap="VipRelationMapper"  parameterType="com.malicn.server.domain.vip.UserVip">
+    select <include refid="all_column" />
+    from ml_vip_relation t
+    where  user_vip_id = #{vipId}
+    order by t.update_time desc
+  </select>
+
+  <select id="getRelationsByVipIdLimit" resultMap="VipRelationMapper"  parameterType="com.malicn.server.domain.vip.UserVip">
+    select <include refid="all_column" />
+    from ml_vip_relation t
+    where  user_vip_id = #{vipId}
+    order by t.update_time desc
+    limit 4
+  </select>
+
+  <select id="getRelationsCount" resultType="java.lang.Long"  parameterType="com.malicn.server.domain.vip.UserVip">
+    select  count(*)
+    from ml_vip_relation t
+    where  user_id = #{userId}
+  </select>
+
+
+  <!--查找前四的推荐朋友-->
+  <select id="getRelationsLimit" resultMap="VipRelationMapper" parameterType="com.malicn.server.domain.vip.UserVip">
+    select <include refid="all_column" />
+    from ml_vip_relation t
+    where  user_id = #{userId}
+    order by t.update_time desc
+    limit 4
+  </select>
+
+  <!--根据被推荐人查找有效的推荐人-->
+  <select id="getRecomRelation" resultMap="VipRelationMapper" >
+    select <include refid="all_column" />
+    from ml_vip_relation t
+    where t.referee_vip_id=#{refereeVipId}
+    order by create_time desc
+    limit 1
+  </select>
+
+  <!-- 建立推荐人和被推荐人关系 -->
+  <insert id="saveVipRelation" parameterType="com.malicn.server.domain.vip.VipRelation">
+    INSERT INTO ml_vip_relation (user_id, user_vip_id, referee_id, referee_vip_id, create_time)
+    VALUES (#{userId}, #{userVipId}, #{refereeId}, #{refereeVipId}, #{createTime})
+  </insert>
+
+</mapper>

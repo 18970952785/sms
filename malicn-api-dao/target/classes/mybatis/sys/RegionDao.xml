@@ -1,0 +1,123 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<!DOCTYPE mapper
+        PUBLIC "-//mybatis.org//DTD Mapper 3.0//EN"
+        "http://mybatis.org/dtd/mybatis-3-mapper.dtd">
+<mapper namespace="com.malicn.server.dao.sys.RegionDao" >
+    <sql id="table_name">ml_region</sql>
+
+    <sql id="all_columns">id,code,name,short_name,parent_id,level,is_central,sort,en_name,en_short_name</sql>
+
+    <resultMap id="RegionMap" type="com.malicn.server.domain.sys.Region" >
+        <id property="id" column="id" />
+        <result property="code" column="code" />
+        <result property="name" column="name" />
+        <result property="shortName" column="short_name"/>
+        <result property="parentId" column="parent_id" />
+        <result property="level" column="level"/>
+        <result property="isCentral" column="is_central"/>
+        <result property="sort" column="sort" />
+        <result property="enName" column="en_name" />
+        <result property="enShortName" column="en_short_name" />
+        <result property="parentShortName" column="parent_short_name" />
+    </resultMap>
+
+
+    <!--根据父节点查询-->
+    <select id="getRegionList" resultMap="RegionMap" parameterType="java.lang.Integer">
+
+        select
+        <include refid="all_columns"/>
+        from <include refid="table_name"/>
+        <where>
+            <if test="parentId != null">
+                parent_id = #{parentId}
+            </if>
+        </where>
+        order BY sort ASC
+    </select>
+
+    <!--根据主键获取地区-->
+    <select id="getRegionById" resultMap="RegionMap">
+        select
+        <include refid="all_columns"/>
+        from <include refid="table_name"/>
+        where id = #{id}
+    </select>
+
+
+    <select id="getRegionCities" resultMap="RegionMap">
+        SELECT
+        <include refid="all_columns"/>
+        FROM ml_region
+        where level = 2
+        order BY sort ASC
+    </select>
+    <select id="getRegionByShortName" resultMap="RegionMap">
+        SELECT
+        <include refid="all_columns"/>
+        FROM ml_region
+        where short_name = #{shortName}
+          and level = 2 <!--修改为2级城市-->
+        limit 1
+    </select>
+    <select id="getRegionListH5" resultMap="RegionMap">
+        SELECT <include refid="all_columns"/>
+        FROM ml_region
+        WHERE level = 1
+        ORDER BY sort ASC
+    </select>
+
+    <select id="selectCityName" resultMap="RegionMap">
+    select CONCAT(NAME,'|',en_name,'|',en_short_name) as NAME ,id  from ml_region
+   </select>
+
+    <select id="getRegionRoute" resultMap="RegionMap">
+        SELECT
+        <include refid="all_columns"/>
+        FROM ml_region
+        where short_name = #{shortName}
+          and level = 2
+        limit 1
+    </select>
+
+    <select id="getRegionByPidAndLevel" resultMap="RegionMap">
+        select
+         <include refid="all_columns"/>
+        from  ml_region
+        where parent_id = #{parentId}
+          and level = #{level}
+    </select>
+
+
+    <select id="getRegionByList"  resultMap="RegionMap"  parameterType="java.util.List">
+          SELECT
+        a.parent_id,a.id,a.short_name,
+        b.name
+        FROM
+        ml_region a
+        INNER JOIN ml_region b ON b.id = a.parent_id
+        AND b. LEVEL = 1
+        WHERE   a.id  in
+        <foreach item="item" collection="list" open="(" separator="," close=")">
+            #{item.regionId}
+        </foreach>
+        AND a.level = 2
+    </select>
+    <select id="getParentById" resultMap="RegionMap" parameterType="java.lang.Integer">
+        SELECT short_name from ml_region
+        where id = (select parent_id from ml_region where id = #{id})
+    </select>
+
+
+    <select id="selectIdName" resultMap="RegionMap" parameterType="java.lang.Integer">
+         SELECT
+        a.parent_id,a.id,a.short_name,
+        b.name,b.short_name as parent_short_name
+        FROM
+        ml_region a
+        INNER JOIN ml_region b ON b.id = a.parent_id
+        AND b. LEVEL = 1
+        WHERE   a.id =#{id} and a.level=2
+    </select>
+
+</mapper>

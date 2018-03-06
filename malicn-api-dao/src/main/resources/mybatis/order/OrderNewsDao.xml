@@ -1,0 +1,58 @@
+<?xml version="1.0" encoding="UTF-8" ?>
+<!DOCTYPE mapper PUBLIC "-//mybatis.org//DTD Mapper 3.0//EN" "http://mybatis.org/dtd/mybatis-3-mapper.dtd" >
+<mapper namespace="com.malicn.server.dao.order.OrderNewsDao" >
+  <resultMap id="OrderNewsMap" type="com.malicn.server.domain.order.OrderNews" >
+    <id column="id" property="id" jdbcType="INTEGER" />
+    <result column="start_id" property="startId" jdbcType="INTEGER" />
+    <result column="start_name" property="startName" jdbcType="VARCHAR" />
+    <result column="arrive_id" property="arriveId" jdbcType="INTEGER" />
+    <result column="arrive_name" property="arriveName" jdbcType="VARCHAR" />
+    <result column="weight" property="weight" jdbcType="DECIMAL" />
+    <result column="cargo_name" property="cargoName" jdbcType="VARCHAR" />
+    <result column="operate" property="operate" jdbcType="VARCHAR" />
+    <result column="order_id" property="orderId" jdbcType="BIGINT"/>
+    <result column="type" property="type" jdbcType="TINYINT" />
+    <result column="create_time" property="createTime" jdbcType="TIMESTAMP" />
+    <result column="is_deleted" property="isDeleted" jdbcType="TINYINT" />
+  </resultMap>
+
+  <sql id="table_name">ml_order_news</sql>
+  <sql id="all_columns">id,start_id,start_name,arrive_id,arrive_name,weight,
+      cargo_name,operate,order_id,type,create_time,is_deleted</sql>
+
+
+    <!-- 创建订单动态 -->
+  <insert id="saveOrderNews" parameterType="com.malicn.server.domain.order.OrderNews">
+      INSERT INTO <include refid="table_name"/> (
+        start_id,start_name,arrive_id,arrive_name,weight,
+        cargo_name,operate,order_id,type,create_time
+      )
+      VALUES (
+        #{startId},#{startName},#{arriveId},#{arriveName},#{weight},
+        #{cargoName},#{operate},#{orderId},#{type},#{createTime}
+      )
+    </insert>
+
+    <!-- 查询订单动态 -->
+  <select id="getOrderNews" parameterType="java.lang.Integer" resultMap="OrderNewsMap">
+      select
+      <include refid="all_columns"/>
+      from
+      <include refid="table_name"/>
+      where id = #{id}
+  </select>
+
+    <!-- 查询订单列表 -->
+  <select id="listRecentBySize" resultMap="OrderNewsMap">
+    SELECT <include refid="all_columns"/>
+      from
+    <include refid="table_name"/>
+    WHERE is_deleted = 0 AND
+    create_time &gt;= #{fromTime} and
+    create_time &lt;= #{endTime}
+    order by create_time Desc
+    limit #{size}
+  </select>
+
+
+</mapper>

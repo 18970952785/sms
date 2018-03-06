@@ -1,0 +1,100 @@
+<?xml version="1.0" encoding="UTF-8" ?>
+<!DOCTYPE mapper PUBLIC "-//mybatis.org//DTD Mapper 3.0//EN" "http://mybatis.org/dtd/mybatis-3-mapper.dtd" >
+<mapper namespace="com.malicn.server.dao.balance.WithdrawDao" >
+  <resultMap id="withdrawMap" type="com.malicn.server.domain.balance.Withdraw" >
+    <id column="id" property="id" jdbcType="BIGINT" />
+    <result column="user_id" property="userId" jdbcType="BIGINT"/>
+    <result column="user_type" property="userType" jdbcType="TINYINT"/>
+    <result column="bank_card_id" property="bankCardId" jdbcType="BIGINT"/>
+    <result column="bank_card_no" property="bankCardNo" jdbcType="VARCHAR" />
+    <result column="card_region_id" property="cardRegionId" jdbcType="INTEGER" />
+    <result column="amount" property="amount" jdbcType="DECIMAL" />
+    <result column="create_time" property="createTime" jdbcType="TIMESTAMP" />
+    <result column="update_time" property="updateTime" jdbcType="TIMESTAMP" />
+    <result column="audit_time" property="auditTime" jdbcType="TIMESTAMP" />
+    <result column="audit_status" property="auditStatus" jdbcType="TINYINT" />
+    <result column="audit_remark" property="auditRemark" jdbcType="VARCHAR" />
+
+    <!--  链表字段-->
+     <result column="real_name" property="realName" jdbcType="VARCHAR" />
+  </resultMap>
+
+  <sql id="all_columns">
+    id,user_id,user_type,bank_card_id,bank_card_no,card_region_id,amount,create_time,update_time,audit_time,audit_status,audit_remark
+  </sql>
+
+  <!--获取累计提现金额-->
+  <select id="getAmountWithdrawMoneyByUserId" parameterType="com.malicn.server.dao.balance.BaseQueryDTO" resultType="decimal">
+    SELECT sum(amount) from ml_withdraw where user_id = #{userId} and user_type=#{userType} AND audit_status = 1;
+  </select>
+
+  <!--获取正在提现笔数-->
+  <select id="getCountWithdrawByUserId" parameterType="com.malicn.server.dao.balance.BaseQueryDTO" resultType="integer">
+    SELECT count(id) from ml_withdraw where user_id = #{userId} and user_type=#{userType} AND audit_status = 0
+  </select>
+
+
+  <!--插入一条提现数据-->
+  <insert id="createWithdraw" parameterType="com.malicn.server.domain.balance.Withdraw" useGeneratedKeys="true" keyProperty="id">
+    INSERT INTO ml_withdraw
+      (user_id,user_type,bank_card_id,bank_card_no,card_region_id,amount,audit_status,create_time,update_time)
+      VALUES
+      (#{userId},#{userType},#{bankCardId},#{bankCardNo},#{cardRegionId}, #{amount},#{auditStatus},now(),now())
+  </insert>
+
+  <!--获取最近一次提现的信息-->
+  <select id="getLastWithdrawInfo" parameterType="com.malicn.server.dao.balance.BaseQueryDTO" resultMap="withdrawMap">
+    select <include refid="all_columns"/>
+    from ml_withdraw WHERE user_id = #{userId} and user_type=#{userType} ORDER BY create_time DESC LIMIT 1
+  </select>
+
+  <update id="updateWithdrawStatus" >
+    update ml_withdraw SET
+        audit_time = now(),
+       audit_status = #{auditStatus},
+      <if test="auditRemark != null and auditRemark!=''" >
+        audit_remark = #{auditRemark,jdbcType=VARCHAR},
+      </if>
+       update_time = now()
+    where id = #{id,jdbcType=BIGINT}
+  </update>
+
+  <select id="selectByPrimaryKeyAllList"  resultMap="withdrawMap">
+ SELECT
+	a.id,
+	a.user_id,
+	a.user_type,
+	a.bank_card_id,
+	a.bank_card_no,
+	a.card_region_id,
+	a.amount,
+	a.create_time,
+	a.update_time,
+	a.audit_time,
+	a.audit_status,
+	a.audit_remark,
+	b.mobile,
+	c.real_name
+FROM
+	ml_withdraw a
+INNER JOIN ml_user_base b ON b.user_id = a.user_id
+INNER JOIN ml_user_driver c ON c.user_id = a.user_id
+where 1=1
+<if test="mobile !=null and mobile!=''">
+ and  b.mobile LIKE concat('%',#{mobile},'%')
+</if>
+    <if test="realName !=null and realName!=''">
+ and c.real_name like concat('%',#{realName},'%')
+    </if>
+      <if test="auditStatus !=null and  auditStatus!=''">
+        and   a.audit_status=#{auditStatus}
+      </if>
+      ORDER BY a.create_time asc
+  </select>
+
+
+  <select id="getById" resultMap="withdrawMap">
+    SELECT <include refid="all_columns" /> from ml_withdraw where id=#{id}
+  </select>
+
+</mapper>

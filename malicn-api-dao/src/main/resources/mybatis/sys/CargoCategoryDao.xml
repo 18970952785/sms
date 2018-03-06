@@ -1,0 +1,46 @@
+<?xml version="1.0" encoding="UTF-8" ?>
+<!DOCTYPE mapper PUBLIC "-//mybatis.org//DTD Mapper 3.0//EN" "http://mybatis.org/dtd/mybatis-3-mapper.dtd" >
+
+<mapper namespace="com.malicn.server.dao.sys.CargoCategoryDao" >
+
+  <resultMap id="CarGoCategoryMap" type="com.malicn.server.domain.sys.CargoCategory" >
+    <id column="id" property="id" jdbcType="INTEGER" />
+    <result column="name" property="name" jdbcType="VARCHAR" />
+    <result column="create_time" property="createTime" jdbcType="TIMESTAMP" />
+    <result column="update_time" property="updateTime" jdbcType="TIMESTAMP" />
+    <result column="is_deleted" property="isDeleted" jdbcType="TINYINT" />
+  </resultMap>
+
+  <sql id="all_columns" >
+    id, name, create_time, update_time, is_deleted
+  </sql>
+
+  <!-- 查询所有货物品类 -->
+  <select id="listCargoCtgory" resultMap="CarGoCategoryMap">
+    select <include refid="all_columns" />
+    from ml_cargo_category
+    where is_deleted=0
+    ORDER BY id ASC
+  </select>
+  <select id="listCargoCtgoryById" resultType="java.lang.String">
+    select name
+    from ml_cargo_category
+    where is_deleted=0 and id IN
+    <foreach collection="cargoCtgtrIds" item="cargoCtgtrIds" index="index"
+             open="(" close=")" separator=",">
+      #{cargoCtgtrIds}
+    </foreach>
+  </select>
+
+
+  <select id="listCargoCtgoryByName" resultType="java.lang.Integer">
+    select id
+    from ml_cargo_category
+    where is_deleted=0 and name IN
+    <foreach collection="cargoCtgtrNames" item="cargoCtgtrNames" index="index"
+             open="(" close=")" separator=",">
+      #{cargoCtgtrNames}
+    </foreach>
+  </select>
+
+</mapper>

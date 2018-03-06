@@ -1,0 +1,358 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<!DOCTYPE mapper PUBLIC "-//mybatis.org//DTD Mapper 3.0//EN" "http://mybatis.org/dtd/mybatis-3-mapper.dtd">
+<mapper namespace="com.malicn.server.dao.user.UserOwnerDao">
+  <resultMap id="UserOwnerMap" type="com.malicn.server.domain.user.UserOwner" extends="com.malicn.server.dao.user.UserBaseDao.UserBaseMap">
+    <id column="user_id" jdbcType="BIGINT" property="userId" />
+    <result column="owner_type" jdbcType="TINYINT" property="ownerType" />
+    <result column="credit_line" jdbcType="DECIMAL" property="creditLine" />
+    <result column="head_img" jdbcType="VARCHAR" property="headImg"/>
+    <result column="id_card" jdbcType="VARCHAR" property="idCard"/>
+    <result column="real_name" jdbcType="VARCHAR" property="realName" />
+    <result column="ording_amount_line" jdbcType="DECIMAL" property="ordingAmountLine"/>
+    <result column="personal_auth_status" jdbcType="TINYINT" property="personalAuthStatus" />
+    <result column="personal_img" jdbcType="VARCHAR" property="personalImg" />
+    <result column="company_auth_status" jdbcType="TINYINT" property="companyAuthStatus" />
+    <result column="company_name" jdbcType="VARCHAR" property="companyName" />
+    <result column="company_img" jdbcType="VARCHAR" property="companyImg" />
+    <result column="balance" property="balance" />
+    <result column="update_time" jdbcType="TIMESTAMP" property="updateTime" />
+    <result column="create_time" jdbcType="TIMESTAMP" property="createTime" />
+    <result column="auth_pass_time" jdbcType="TIMESTAMP" property="authPassTime" />
+    <result column="id_status" jdbcType="TINYINT" property="idStatus" />
+    <result column="audit_remark" property="auditRemark" />
+    <result column="province_id" property="provinceId" />
+    <result column="province_name" property="provinceName" />
+    <result column="city_id" property="cityId" />
+    <result column="city_name" property="cityName" />
+  </resultMap>
+  <!-- 对应数据库的ml_user_owner表 -->
+  <sql id="Base_Column_List">
+    user_id, owner_type, credit_line,id_card,real_name, personal_auth_status, personal_img, company_auth_status,
+    company_name, company_img, balance, update_time,create_time,auth_pass_time,id_status,province_id,province_name,city_id,city_name
+  </sql>
+  <select id="selectByPrimaryKey" parameterType="java.lang.Long" resultMap="UserOwnerMap">
+    select 
+    a.user_id, a.owner_type, a.credit_line,a.id_card,a.real_name, a.personal_auth_status, a.personal_img, a.company_auth_status,
+    a.company_name, a.company_img, a.balance, a.update_time,a.create_time,a.auth_pass_time,a.id_status, b.mobile, a.city_name,a.province_name
+    from ml_user_owner a
+    LEFT JOIN ml_user_base b on a.user_id = b.user_id
+    where a.user_id = #{userId,jdbcType=BIGINT}
+  </select>
+  <delete id="deleteByPrimaryKey" parameterType="java.lang.Long">
+    delete from ml_user_owner
+    where user_id = #{userId,jdbcType=BIGINT}
+  </delete>
+  <!-- 第一次认证是新增 -->
+  <insert id="insert">
+    insert into ml_user_owner (user_id,credit_line,ording_amount_line,
+       personal_img,
+      company_name, company_img,create_time,id_status
+      )
+    values (
+      #{userId,jdbcType=BIGINT},#{creditLine,jdbcType=DECIMAL},0,
+       #{personalImg,jdbcType=VARCHAR},
+      #{companyName,jdbcType=VARCHAR}, #{companyImg,jdbcType=VARCHAR}, now(),#{idStatus,jdbcType=TINYINT}
+      )
+  </insert>
+
+
+  <insert id="insertSelective" parameterType="com.malicn.server.domain.user.UserOwner" >
+    insert into ml_user_owner
+    <trim prefix="(" suffix=")" suffixOverrides="," >
+      <if test="userId != null" >
+        user_id,
+      </if>
+      <if test="ownerType != null" >
+        owner_type,
+      </if>
+      <if test="creditLine != null" >
+        credit_line,
+      </if>
+      <if test="idCard != null" >
+        id_card,
+      </if>
+      <if test="realName != null" >
+        real_name,
+      </if>
+      <if test="ordingAmountLine != null" >
+        ording_amount_line,
+      </if>
+      <if test="personalAuthStatus != null" >
+        personal_auth_status,
+      </if>
+      <if test="personalImg != null" >
+        personal_img,
+      </if>
+      <if test="companyAuthStatus != null" >
+        company_auth_status,
+      </if>
+      <if test="companyName != null" >
+        company_name,
+      </if>
+      <if test="companyImg != null" >
+        company_img,
+      </if>
+      <if test="authPassTime != null" >
+        auth_pass_time,
+      </if>
+      <if test="idStatus != null" >
+        id_status,
+      </if>
+      create_time
+    </trim>
+    <trim prefix="values (" suffix=")" suffixOverrides="," >
+      <if test="userId != null" >
+        #{userId,jdbcType=BIGINT},
+      </if>
+      <if test="ownerType != null" >
+        #{ownerType,jdbcType=TINYINT},
+      </if>
+      <if test="creditLine != null" >
+        #{creditLine,jdbcType=DECIMAL},
+      </if>
+      <if test="idCard != null" >
+        #{idCard,jdbcType=VARCHAR},
+      </if>
+      <if test="realName != null" >
+        #{realName,jdbcType=VARCHAR},
+      </if>
+      <if test="ordingAmountLine != null" >
+        #{ordingAmountLine,jdbcType=DECIMAL},
+      </if>
+      <if test="personalAuthStatus != null" >
+        #{personalAuthStatus,jdbcType=TINYINT},
+      </if>
+      <if test="personalImg != null" >
+        #{personalImg,jdbcType=VARCHAR},
+      </if>
+      <if test="companyAuthStatus != null" >
+        #{companyAuthStatus,jdbcType=TINYINT},
+      </if>
+      <if test="companyName != null" >
+        #{companyName,jdbcType=VARCHAR},
+      </if>
+      <if test="companyImg != null" >
+        #{companyImg,jdbcType=VARCHAR},
+      </if>
+      <if test="authPassTime != null" >
+        #{authPassTime,jdbcType=TIMESTAMP},
+      </if>
+      <if test="idStatus != null" >
+        #{idStatus,jdbcType=TINYINT},
+      </if>
+      <choose>
+        <when test="createTime != null">
+          #{createTime,jdbcType=TIMESTAMP}
+        </when>
+        <otherwise>
+          now()
+        </otherwise>
+      </choose>
+    </trim>
+  </insert>
+
+  <update id="updateByPrimaryKeySelective" parameterType="com.malicn.server.domain.user.UserOwner">
+    update ml_user_owner
+    <set>
+      <if test="ownerType != null">
+        owner_type = #{ownerType,jdbcType=TINYINT},
+      </if>
+      <if test="creditLine != null">
+        credit_line = #{creditLine,jdbcType=DECIMAL},
+      </if>
+      <if test="headImg != null">
+        head_img = #{headImg},
+      </if>
+      <if test="idCard != null">
+        id_card = #{idCard,jdbcType=VARCHAR},
+      </if>
+      <if test="realName != null">
+        real_name = #{realName,jdbcType=VARCHAR},
+      </if>
+      <if test="personalAuthStatus != null">
+        personal_auth_status = #{personalAuthStatus,jdbcType=TINYINT},
+      </if>
+      <if test="personalImg != null">
+        personal_img = #{personalImg,jdbcType=VARCHAR},
+      </if>
+      <if test="companyAuthStatus != null">
+        company_auth_status = #{companyAuthStatus,jdbcType=TINYINT},
+      </if>
+      <if test="companyName != null">
+        company_name = #{companyName,jdbcType=VARCHAR},
+      </if>
+      <if test="companyImg != null">
+        company_img = #{companyImg,jdbcType=VARCHAR},
+      </if>
+      <if test="updateTime != null">
+        update_time = #{updateTime,jdbcType=TIMESTAMP},
+      </if>
+      <if test="authPassTime != null">
+        auth_pass_time = #{authPassTime,jdbcType=TIMESTAMP},
+      </if>
+      <if test="idStatus != null">
+        id_status = #{idStatus,jdbcType=TINYINT},
+      </if>
+    </set>
+    where user_id = #{userId,jdbcType=BIGINT}
+  </update>
+  <update id="updateByPrimaryKey" parameterType="com.malicn.server.domain.user.UserOwner">
+    update ml_user_owner
+    set owner_type = #{ownerType,jdbcType=TINYINT},
+      credit_line = #{creditLine,jdbcType=DECIMAL},
+      personal_auth_status = #{personalAuthStatus,jdbcType=TINYINT},
+      personal_img = #{personalImg,jdbcType=VARCHAR},
+      company_auth_status = #{companyAuthStatus,jdbcType=TINYINT},
+      company_name = #{companyName,jdbcType=VARCHAR},
+      company_img = #{companyImg,jdbcType=VARCHAR},
+      update_time = #{updateTime,jdbcType=TIMESTAMP},
+      auth_pass_time = #{authPassTime,jdbcType=TIMESTAMP}
+    where user_id = #{userId,jdbcType=BIGINT}
+  </update>
+
+
+  <select id="selectByUserId" resultMap="UserOwnerMap" parameterType="java.lang.Long">
+      select a.user_id, a.owner_type,a.credit_line,
+      a.ording_amount_line,a.personal_auth_status,
+      a.company_auth_status,a.id_status,a.head_img, a.balance,
+      b.mobile,a.id_card,a.real_name,a.company_name,b.reg_from
+      from ml_user_owner a
+      left join ml_user_base b
+      on a.user_id=b.user_id
+      where a.user_id=#{userId}
+  </select>
+
+  <!--@author qun.xu 推荐朋友列表-->
+  <select id="getOwnerList" resultMap="UserOwnerMap" parameterType="java.util.List">
+    select
+        o.user_id,o.head_img,o.real_name,o.company_name,b.mobile
+    from ml_user_owner o
+    inner join ml_user_base b
+    on o.user_id = b.user_id
+    where o.user_id in
+    <foreach collection="list" index="index" item="baseQueryDTO" open="(" separator="," close=")">
+      #{baseQueryDTO.userId}
+    </foreach>
+    order by o.update_time desc
+  </select>
+
+  <!-- 根据电话号码查询货主信息 -->
+  <select id="getByMobile" resultMap="UserOwnerMap">
+      SELECT
+      a.owner_type,a.credit_line,a.ording_amount_line,a.personal_auth_status,a.company_auth_status,a.id_status,a.head_img, a.balance,
+      b.mobile,a.id_card,a.real_name,a.company_name,b.reg_from,a.user_id
+      from ml_user_owner a
+      left join ml_user_base b
+      on a.user_id=b.user_id
+      WHERE b.mobile =  #{mobile}
+  </select>
+  <select id="getUserOwnerByIdCard" resultMap="UserOwnerMap" parameterType="java.lang.String">
+    SELECT <include refid="Base_Column_List" /> FROM ml_user_owner
+    WHERE id_card = #{idCard}
+    AND id_status = 1
+    limit 1
+  </select>
+
+  <select id="getByOwnerInfo" resultMap="UserOwnerMap">
+  SELECT b.mobile,a.real_name,a.user_id,a.company_name from  ml_user_owner a
+  INNER JOIN  ml_user_base   b on a.user_id=b.user_id
+     where b.status=0    and a.id_status=1
+    <if test="wd != null and wd != ''">
+      AND  (a.real_name like  CONCAT('%',#{wd},'%' )  or b.mobile like  CONCAT('%',#{wd},'%' )   )
+    </if>
+    order by a.create_time desc
+    LIMIT 15
+  </select>
+
+
+  <select id="getUserOwnerByList"  resultMap="UserOwnerMap"  parameterType="java.util.List">
+    select
+    <include refid="Base_Column_List"/>
+    from ml_user_owner
+    where user_id in
+    <foreach item="item" collection="list" open="(" separator="," close=")">
+      #{item.userId}
+    </foreach>
+    and id_status=1
+  </select>
+
+  <select id="listUserOwnerByParams" resultMap="UserOwnerMap">
+    SELECT a.credit_line,a.ording_amount_line,
+    a.personal_auth_status,a.company_auth_status,
+    a.id_status,a.head_img, a.balance,
+    b.mobile,a.id_card,a.real_name,a.company_name,b.reg_from,a.user_id,
+    a.auth_pass_time,a.create_time,a.city_name,a.province_id,a.province_name,a.city_id
+    FROM ml_user_owner a
+    LEFT JOIN ml_user_base b on a.user_id = b.user_id
+    WHERE 1=1
+    <if test="mobile != null and mobile != ''">
+      AND LOCATE(#{mobile}, b.mobile) > 0
+    </if>
+    <if test="realName != null and realName != ''">
+      AND LOCATE(#{realName}, a.real_name) > 0
+    </if>
+    <if test="companyName != null and companyName != ''" >
+      AND LOCATE(#{companyName} , a.company_name) > 0
+    </if>
+    <!-- 如果传过来的是1 查询已确定的 -->
+    <if test="idStatus == 1">
+      AND a.id_status = 1
+    </if>
+    <!-- 如果传过来的是2 查询未确定的 -->
+    <if test="idStatus == 2">
+      AND a.id_status = 0
+    </if>
+  </select>
+
+  <update id="updateByAudit" parameterType="com.malicn.server.domain.user.UserOwner">
+    UPDATE ml_user_owner
+    <set>
+      <if test="realName != null and realName != ''">
+        real_name = #{realName},
+      </if>
+      <if test="idCard != null and idCard != ''">
+        id_card = #{idCard},
+      </if>
+      <if test="personalAuthStatus != null">
+        personal_auth_status = #{personalAuthStatus},
+      </if>
+      <if test="personalImg != null">
+        personal_img = #{personalImg,jdbcType=VARCHAR},
+      </if>
+      <if test="companyAuthStatus != null">
+        company_auth_status = #{companyAuthStatus},
+      </if>
+      <if test="companyName != null">
+        company_name = #{companyName},
+      </if>
+      <if test="companyImg != null">
+        company_img = #{companyImg},
+      </if>
+      <if test="idStatus != null">
+        id_status = #{idStatus},
+      </if>
+      <if test="ordingAmountLine != null">
+        ording_amount_line = ${ordingAmountLine},
+      </if>
+      <if test="provinceId != null">
+        province_id = #{provinceId},
+      </if>
+      <if test="provinceName != null">
+        province_name = #{provinceName},
+      </if>
+      <if test="cityId != null">
+        city_id = #{cityId},
+      </if>
+      <if test="cityName != null">
+        city_name = #{cityName},
+      </if>
+      auth_pass_time = now()
+    </set>
+    WHERE user_id = #{userId}
+  </update>
+  <update id="updateAuthStatus">
+    UPDATE ml_user_owner
+    SET id_status = #{authStatus}
+    WHERE user_id = #{userId}
+  </update>
+</mapper>
